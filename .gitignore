@@ -3,6 +3,9 @@
 /.project
 /.settings
 
+# vscode config
+/.vscode
+
 # netbeans
 /nbproject
 
