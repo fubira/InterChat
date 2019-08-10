@@ -10,7 +10,15 @@ public class ConfigHandler {
     private File configFile;
     private YamlConfiguration config;
 
-    public ConfigHandler(File configFile) {
+    public ConfigHandler(File dataFolder) {
+        File configFile = new File(dataFolder, "config.yml");
+
+        try {
+            configFile.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    
         this.configFile = configFile;
         this.config = YamlConfiguration.loadConfiguration(configFile);
 
