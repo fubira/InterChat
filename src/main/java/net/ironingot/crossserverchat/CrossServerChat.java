@@ -1,4 +1,4 @@
-package net.ironingot.nihongochat;
+package net.ironingot.crossserverchat;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,15 +6,15 @@ import java.util.logging.Logger;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class NihongoChat extends JavaPlugin {
+public class CrossServerChat extends JavaPlugin {
     public static final Logger logger = Logger.getLogger("Minecraft");
     private ConfigHandler configHandler;
 
     public void onEnable() {
-        new NihongoChatAsyncPlayerChatListener(this);
+        new AsyncPlayerChatListener(this);
 
         loadConfig();
-        getCommand("nihongochat").setExecutor(new NihongoChatCommand(this));
+        getCommand("nihongochat").setExecutor(new CommandHandler(this));
 
         logger.info(getDescription().getName() + "-" +
                     getDescription().getVersion() + " is enabled!");

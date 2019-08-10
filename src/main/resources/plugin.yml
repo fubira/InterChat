@@ -1,9 +1,9 @@
-name: NihongoChat
+name: CrossServerChat
 author: fubira
-main: net.ironingot.nihongochat.NihongoChat
+main: net.ironingot.nihongochat.CrossServerChat
 version: 1.2
 commands:
-  nihongochat:
+  crosserverchat:
     usage:
       /<command> [on|off]
       /<command> translate [on|off]

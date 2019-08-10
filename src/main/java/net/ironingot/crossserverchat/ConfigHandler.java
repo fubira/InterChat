@@ -1,4 +1,4 @@
-package net.ironingot.nihongochat;
+package net.ironingot.crossserverchat;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +18,7 @@ public class ConfigHandler {
     }
 
     public void load() {
-        ConfigurationSection section = config.getConfigurationSection("NihongoChat");
+        ConfigurationSection section = config.getConfigurationSection("CrossServerChat");
 
         if (section != null) {
             for (String key : section.getKeys(false)) {

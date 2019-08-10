@@ -1,16 +1,16 @@
-package net.ironingot.nihongochat;
+package net.ironingot.crossserverchat;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-public class NihongoChatCommand implements CommandExecutor {
-    private NihongoChat plugin;
+public class CommandHandler implements CommandExecutor {
+    private CrossServerChat plugin;
     private String pluginName;
     private String pluginVersion;
 
-    public NihongoChatCommand(NihongoChat plugin){
+    public CommandHandler(CrossServerChat plugin){
         this.plugin = plugin;
         this.pluginName = plugin.getDescription().getName();
         this.pluginVersion = plugin.getDescription().getVersion();

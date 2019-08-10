@@ -1,7 +1,6 @@
 package net.ironingot.translator;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -11,12 +10,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
-import net.ironingot.nihongochat.NihongoChat;
 
 public class GoogleTranslatorAPI {
     private static final String baseURL = "http://www.google.com/transliterate";
