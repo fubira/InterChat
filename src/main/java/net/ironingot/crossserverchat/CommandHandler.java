@@ -31,37 +31,6 @@ public class CommandHandler implements CommandExecutor {
             sender.sendMessage(ChatColor.GOLD + this.pluginName + "-" + this.pluginVersion);
             return true;
         }
-
-        if (command != null && command.equals("kanji")) {
-            if (option != null && (option.equals("on") || option.equals("true"))) {
-                plugin.getConfigHandler().setUserKanjiConversion(sender.getName(), Boolean.TRUE);
-            }
-            if (option != null && (option.equals("off") || option.equals("false"))) {
-                plugin.getConfigHandler().setUserKanjiConversion(sender.getName(), Boolean.FALSE);
-            }
-
-            if (plugin.getConfigHandler().getUserKanjiConversion(sender.getName())) {
-                sender.sendMessage(ChatColor.GOLD + pluginName + " Kanji conversion is enabled.");
-            } else {
-                sender.sendMessage(ChatColor.GOLD + pluginName + " Kanji conversion is disabled.");
-            }
-            return true;
-        }
-
-        if (command != null) {
-            if (command.equals("on") || command.equals("true")) {
-                plugin.getConfigHandler().setUserMode(sender.getName(), Boolean.TRUE);
-            }
-            if (command.equals("off") || command.equals("false")) {
-                plugin.getConfigHandler().setUserMode(sender.getName(), Boolean.FALSE);
-            }
-        }
-
-        if (plugin.getConfigHandler().getUserMode(sender.getName()) == Boolean.TRUE) {
-            sender.sendMessage(ChatColor.GOLD + pluginName + " is enabled.");
-        } else {
-            sender.sendMessage(ChatColor.GOLD + pluginName + " is disabled.");
-        }
         return true;
     }
 }

@@ -7,19 +7,19 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 public class ConfigHandler {
+    private CrossServerChat plugin;
     private File configFile;
     private YamlConfiguration config;
 
-    public ConfigHandler(File dataFolder) {
-        File configFile = new File(dataFolder, "config.yml");
+    public ConfigHandler(CrossServerChat plugin) {
+        this.plugin = plugin;
 
-        try {
-            configFile.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
+        this.configFile = new File(plugin.getDataFolder(), "config.yml");
+
+        if (!configFile.exists()) {
+            this.plugin.saveDefaultConfig();
         }
-    
-        this.configFile = configFile;
+
         this.config = YamlConfiguration.loadConfiguration(configFile);
 
         load();
@@ -30,6 +30,7 @@ public class ConfigHandler {
 
         if (section != null) {
             for (String key : section.getKeys(false)) {
+
                 config.set(key, section.get(key));
             }
         } 
@@ -45,46 +46,18 @@ public class ConfigHandler {
         }
     }
 
-    public Boolean getUserKanjiConversion(String name) {
-        String path = "user." + name + ".kanji";
-        Boolean usingKanjiConversion = (Boolean)config.get(path);
-
-        if (usingKanjiConversion == null) {
-            usingKanjiConversion = Boolean.TRUE;
-            config.set(path, usingKanjiConversion);
-
-            save();
-        }
-
-        return usingKanjiConversion;
+    public String getServerIdentify() {
+        String path = "server.identify";
+        return (String)config.get(path);
     }
 
-    public void setUserKanjiConversion(String name, Boolean value) {
-        String path = "user." + name + ".kanji";
-        config.set(path, value);
-
-        save();
+    public String getFirestoreURL() {
+        String path = "firestore.url";
+        return (String)config.get(path);
     }
 
-
-    public Boolean getUserMode(String name) {
-        String path = "user." + name + ".nihongochat";
-        Boolean userMode = (Boolean)config.get(path);
-
-        if (userMode == null) {
-            userMode = Boolean.TRUE;
-            config.set(path, userMode);
-
-            save();
-        }
-
-        return userMode;
-    }
-
-    public void setUserMode(String name, Boolean value) {
-        String path = "user." + name + ".nihongochat";
-        config.set(path, value);
-
-        save();
+    public String getFirestoreAuthKey() {
+        String path = "firestore.auth-key";
+        return (String)config.get(path);
     }
 }

@@ -11,6 +11,10 @@
 
   <repositories>
     <repository>
+      <id>mavenrepository</id>
+      <url>https://mvnrepository.com/</url>
+    </repository>
+    <repository>
       <id>spigot-repo</id>
       <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
     </repository>
@@ -23,6 +27,16 @@
       <version>1.12.2-R0.1-SNAPSHOT</version>
       <type>jar</type>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.firebase</groupId>
+      <artifactId>firebase-token-generator</artifactId>
+      <version>2.0.0</version>
+    </dependency>
+    <dependency>
+        <groupId>org.json</groupId>
+        <artifactId>json</artifactId>
+        <version>20180813</version>
     </dependency>
   </dependencies>
 
@@ -45,6 +59,40 @@
           <encoding>UTF-8</encoding>
         </configuration>
       </plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.4.3</version>
+				<configuration>
+					<minimizeJar>true</minimizeJar>
+					<artifactSet>
+						<includes>
+							<include>org.json:json</include>
+							<include>com.firebase:firebase-token-generator</include>
+						</includes>
+					</artifactSet>
+					<relocations>
+						<relocation>
+							<pattern>com.json</pattern>
+							<shadedPattern>net.ironingot.crossserverchat.depend.json</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>com.firebase</pattern>
+							<shadedPattern>net.ironingot.crossserverchat.depend.firebase</shadedPattern>
+						</relocation>
+					</relocations>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
     </plugins>
   </build>
 </project>
