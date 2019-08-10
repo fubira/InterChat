@@ -1,0 +1,11 @@
+name: NihongoChat
+author: fubira
+main: net.ironingot.nihongochat.NihongoChat
+version: 1.2
+commands:
+  nihongochat:
+    usage:
+      /<command> [on|off]
+      /<command> translate [on|off]
+      /<command> version
+    description: Alphabet to Hiragana convert + Kanji Translation
