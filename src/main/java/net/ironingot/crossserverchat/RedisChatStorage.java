@@ -10,8 +10,10 @@ import java.util.Map;
 
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.Range;
+import io.lettuce.core.ScoredValue;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisSortedSetCommands;
+import io.lettuce.core.api.sync.RedisListCommands;
 
 public class RedisChatStorage implements IChatStorage {
     private CrossServerChat plugin;
@@ -19,7 +21,7 @@ public class RedisChatStorage implements IChatStorage {
     private RedisClient redisClient;
     private StatefulRedisConnection<String, String> redisConnection;
     private String key = "logs";
-    private long lastReadTime;
+    private long lastTime;
 
     public RedisChatStorage(CrossServerChat plugin) {
         this.plugin = plugin;
@@ -30,7 +32,7 @@ public class RedisChatStorage implements IChatStorage {
         if (this.redisClient == null) {
             this.redisClient = RedisClient.create(this.plugin.getConfigHandler().getRedisURI());
             this.redisConnection = this.redisClient.connect();
-            this.lastReadTime = System.currentTimeMillis();
+            this.lastTime = System.currentTimeMillis();
         }
     }
 
@@ -80,6 +82,7 @@ public class RedisChatStorage implements IChatStorage {
         try {
             final RedisSortedSetCommands<String, String> sync = this.redisConnection.sync();
             sync.zadd(key, time, jsonString);
+            CrossServerChat.logger.info("Post: " + key + ", " + time + ", " + jsonString);
         }
         catch (JSONException e) {
             e.printStackTrace();
@@ -87,20 +90,17 @@ public class RedisChatStorage implements IChatStorage {
     }
 
     protected void receiveMessage(final IChatReceiveCallback callback) {
-        long fromTime = this.lastReadTime;
-        long toTime = System.currentTimeMillis();
-
         final RedisSortedSetCommands<String, String> sync = this.redisConnection.sync();
-        List<String> value = sync.zrangebyscore(key, Range.create(fromTime, toTime));
+        List<ScoredValue<String>> scoredValue = sync.zrangebyscoreWithScores(key, Range.create(this.lastTime, Double.POSITIVE_INFINITY));
 
-        for (String message: value) {
+        for (ScoredValue<String> value: scoredValue) {
             try {
-                callback.message(new JSONObject(message).toMap());
+                CrossServerChat.logger.info("Receive: " + key + ", " + this.lastTime + ", " + value.getScore() + ":" + value.getValue());
+                callback.message(new JSONObject(value.getValue()).toMap());
+                this.lastTime = (long)value.getScore() + 1;
             }
             catch (JSONException e) {
             }
         }
-
-        this.lastReadTime = toTime;
     }
 }

@@ -36,7 +36,7 @@ public class PlayerEventListener implements Listener, IChatReceiveCallback {
             public void run() {
                 chatStorage.receive(callback);
             }
-        }.runTaskTimer(plugin, 50, 50);
+        }.runTaskTimer(plugin, 50, 30);
     }
 
     public void stopReceive() {
@@ -54,10 +54,14 @@ public class PlayerEventListener implements Listener, IChatReceiveCallback {
 
         final Boolean isSystem = (Boolean) data.get("isSystem");
         final StringBuilder builder = new StringBuilder();
+        String message = (String) data.get("message");
+        String server = (String) data.get("server");
+
+        if (this.plugin.getConfigHandler().getServerIdentify().equals(server)) {
+            return;
+        }
 
         if (isSystem) {
-            String message = (String) data.get("message");
-            String server = (String) data.get("server");
 
             builder.append(ChatColor.DARK_GREEN).append("[").append(server)
                 .append("]").append(ChatColor.RESET).append(" ").append(message);
@@ -65,8 +69,6 @@ public class PlayerEventListener implements Listener, IChatReceiveCallback {
         } else {
             String senderName = (String) data.get("senderName");
             String senderWorld = (String) data.get("senderWorld");
-            String server = (String) data.get("server");
-            String message = (String) data.get("message");
             // String format = (String) data.get("format");
 
             builder.append(ChatColor.DARK_GREEN).append("[").append(server)
