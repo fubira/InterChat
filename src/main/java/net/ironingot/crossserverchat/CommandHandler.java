@@ -20,7 +20,7 @@ public class CommandHandler implements CommandExecutor {
         String command;
         String option;
 
-        command = (args.length >= 1) ? args[0].toLowerCase() : "get";
+        command = (args.length >= 1) ? args[0].toLowerCase() : "version";
         option  = (args.length >= 2) ? args[1].toLowerCase() : null;
 
         return executeCommand(sender, command, option);
@@ -29,6 +29,11 @@ public class CommandHandler implements CommandExecutor {
     private boolean executeCommand(CommandSender sender, String command, String option) {
         if (command != null && command.equals("version")) {
             sender.sendMessage(ChatColor.GOLD + this.pluginName + "-" + this.pluginVersion);
+            return true;
+        }
+        if (command.equals("reload")) {
+            this.plugin.reloadConfig();
+            sender.sendMessage(ChatColor.GOLD + this.pluginName + ": configuration reloaded.");
             return true;
         }
         return true;

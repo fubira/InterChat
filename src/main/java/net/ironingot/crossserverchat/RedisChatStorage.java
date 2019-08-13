@@ -5,15 +5,12 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.function.Function;
 import java.util.List;
 import java.util.Map;
 
 import io.lettuce.core.RedisClient;
-import io.lettuce.core.RedisFuture;
 import io.lettuce.core.Range;
 import io.lettuce.core.api.StatefulRedisConnection;
-import io.lettuce.core.api.async.RedisSortedSetAsyncCommands;
 import io.lettuce.core.api.sync.RedisSortedSetCommands;
 
 public class RedisChatStorage implements IChatStorage {
@@ -39,7 +36,7 @@ public class RedisChatStorage implements IChatStorage {
 
     public void close() {
         if (this.redisConnection != null) {
-            this.redisConnection.close();
+            // this.redisConnection.close();
             this.redisConnection = null;
         }
         if (this.redisClient != null) {
@@ -89,7 +86,7 @@ public class RedisChatStorage implements IChatStorage {
         }
     }
 
-    protected synchronized void receiveMessage(final IChatReceiveCallback callback) {
+    protected void receiveMessage(final IChatReceiveCallback callback) {
         long fromTime = this.lastReadTime;
         long toTime = System.currentTimeMillis();
 

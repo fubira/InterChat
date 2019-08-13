@@ -3,9 +3,12 @@ author: fubira
 main: net.ironingot.crossserverchat.CrossServerChat
 version: 0.3
 commands:
-  crosserverchat:
+  crossserverchat:
+    aliases: [csc]
+    permissions: crossserverchat.command
+    description: CrossServerChat
     usage:
-      /<command> [on|off]
-      /<command> translate [on|off]
+      /<command> 
       /<command> version
-    description: Alphabet to Hiragana convert + Kanji Translation
+      /<command> reload
+      /<command> help

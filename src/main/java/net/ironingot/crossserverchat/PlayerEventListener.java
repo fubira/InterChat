@@ -36,7 +36,7 @@ public class PlayerEventListener implements Listener, IChatReceiveCallback {
             public void run() {
                 chatStorage.receive(callback);
             }
-        }.runTaskTimer(plugin, 100, 50);
+        }.runTaskTimer(plugin, 50, 50);
     }
 
     public void stopReceive() {
@@ -70,7 +70,7 @@ public class PlayerEventListener implements Listener, IChatReceiveCallback {
             // String format = (String) data.get("format");
 
             builder.append(ChatColor.DARK_GREEN).append("[").append(server)
-                .append(":").append(senderWorld).append("]").append(ChatColor.RESET)
+                .append("@").append(senderWorld).append("]").append(ChatColor.RESET)
                 .append("<").append(senderName).append("> ").append(message);
         }
         this.plugin.getServer().broadcastMessage(builder.toString());

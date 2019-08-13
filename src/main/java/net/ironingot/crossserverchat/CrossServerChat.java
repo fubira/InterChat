@@ -16,7 +16,7 @@ public class CrossServerChat extends JavaPlugin {
         this.chatStorage = new RedisChatStorage(this);
         this.playerEventListener = new PlayerEventListener(this);
 
-        getCommand("crosserverchat").setExecutor(new CommandHandler(this));
+        getCommand("crossserverchat").setExecutor(new CommandHandler(this));
         getServer().getPluginManager().registerEvents(this.playerEventListener, this);
 
         chatStorage.open();
