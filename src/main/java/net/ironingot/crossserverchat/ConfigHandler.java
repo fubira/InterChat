@@ -60,4 +60,9 @@ public class ConfigHandler {
         String path = "firestore.auth-key";
         return (String)config.get(path);
     }
+
+    public String getRedisURI() {
+        String path = "redis.uri";
+        return (String)config.get(path);
+    }
 }

@@ -1,7 +1,6 @@
 server:
-  identify: Server
+  identify: "SERVER NAME"
 
-firestore: 
-  url: 'https://firestore.googleapis.com/v1/projects/<PROJECT NAME>/databases/(default)/documents/crossserverchat/logs'
-  auth-key: '<YOUR AUTH KEY>'
+redis: 
+  uri: "[REDIS URI]"
 

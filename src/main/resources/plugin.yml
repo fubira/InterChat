@@ -1,7 +1,7 @@
 name: CrossServerChat
 author: fubira
 main: net.ironingot.crossserverchat.CrossServerChat
-version: 0.1
+version: 0.2
 commands:
   crosserverchat:
     usage:
