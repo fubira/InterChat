@@ -52,17 +52,16 @@ public class PlayerEventListener implements Listener, IChatReceiveCallback {
             return;
         }
 
-        Boolean isSystem = (Boolean) data.get("isSystem");
+        final Boolean isSystem = (Boolean) data.get("isSystem");
+        final StringBuilder builder = new StringBuilder();
 
         if (isSystem) {
-            StringBuilder bulider = new StringBuilder();
             String message = (String) data.get("message");
             String server = (String) data.get("server");
 
-            bulider.append(ChatColor.DARK_GREEN).append("[").append(server)
+            builder.append(ChatColor.DARK_GREEN).append("[").append(server)
                 .append("]").append(ChatColor.RESET).append(" ").append(message);
 
-            this.plugin.getServer().broadcastMessage(bulider.toString());
         } else {
             String senderName = (String) data.get("senderName");
             String senderWorld = (String) data.get("senderWorld");
@@ -70,13 +69,11 @@ public class PlayerEventListener implements Listener, IChatReceiveCallback {
             String message = (String) data.get("message");
             // String format = (String) data.get("format");
 
-            StringBuilder bulider = new StringBuilder();
-            bulider.append(ChatColor.DARK_GREEN).append("[").append(server)
-                .append("#").append(senderWorld).append("]").append(ChatColor.RESET)
+            builder.append(ChatColor.DARK_GREEN).append("[").append(server)
+                .append(":").append(senderWorld).append("]").append(ChatColor.RESET)
                 .append("<").append(senderName).append("> ").append(message);
-
-            this.plugin.getServer().broadcastMessage(bulider.toString());
         }
+        this.plugin.getServer().broadcastMessage(builder.toString());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

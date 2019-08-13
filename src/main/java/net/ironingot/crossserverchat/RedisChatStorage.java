@@ -1,44 +1,56 @@
 package net.ironingot.crossserverchat;
 
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.function.Function;
+import java.util.List;
 import java.util.Map;
 
-import redis.clients.jedis.Jedis;
+import io.lettuce.core.RedisClient;
+import io.lettuce.core.RedisFuture;
+import io.lettuce.core.Range;
+import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.api.async.RedisSortedSetAsyncCommands;
+import io.lettuce.core.api.sync.RedisSortedSetCommands;
 
 public class RedisChatStorage implements IChatStorage {
     private CrossServerChat plugin;
 
-    private Jedis jedis;
+    private RedisClient redisClient;
+    private StatefulRedisConnection<String, String> redisConnection;
     private String key = "logs";
     private long lastReadTime;
 
     public RedisChatStorage(CrossServerChat plugin) {
         this.plugin = plugin;
-        this.jedis = null;
+        this.redisClient = null;
     }
 
     public void open() {
-        if (this.jedis == null) {
-            this.jedis = new Jedis(this.plugin.getConfigHandler().getRedisURI());
+        if (this.redisClient == null) {
+            this.redisClient = RedisClient.create(this.plugin.getConfigHandler().getRedisURI());
+            this.redisConnection = this.redisClient.connect();
             this.lastReadTime = System.currentTimeMillis();
         }
     }
 
     public void close() {
-        this.jedis.close();
-        this.jedis = null;
+        if (this.redisConnection != null) {
+            this.redisConnection.close();
+            this.redisConnection = null;
+        }
+        if (this.redisClient != null) {
+            this.redisClient.shutdown();
+            this.redisClient = null;
+        }
     }
 
     public void post(final Map<String, Object> data) {
-        if (this.jedis == null) {
-            CrossServerChat.logger.warning("CrossServerChat posting failed: redis is close.");
+        if (this.redisConnection == null) {
+            CrossServerChat.logger.warning("CrossServerChat post failed: redisConnection is close.");
             return;
         }
 
@@ -47,12 +59,12 @@ public class RedisChatStorage implements IChatStorage {
             public void run() {
                 postMessage(data);
             }
-        }.runTask(this.plugin);
+        }.runTaskAsynchronously(this.plugin);
     }
 
     public void receive(final IChatReceiveCallback callback) {
-        if (this.jedis == null) {
-            CrossServerChat.logger.warning("CrossServerChat receiving failed: redis is close.");
+        if (this.redisConnection == null) {
+            CrossServerChat.logger.warning("CrossServerChat receive failed: redisConnection is close.");
             return;
         }
 
@@ -64,46 +76,34 @@ public class RedisChatStorage implements IChatStorage {
         }.runTask(this.plugin);
     }
 
-    protected synchronized void postMessage(final Map<String, Object> data) {
-        String jsonString = new JSONObject(data).toString();
-        CrossServerChat.logger.info("JsonString: " + jsonString);
+    protected void postMessage(final Map<String, Object> data) {
+        final String jsonString = new JSONObject(data).toString();
+        final long time = System.currentTimeMillis();
 
         try {
-            long time = System.currentTimeMillis();
-            this.jedis.zadd(key, time, jsonString);
+            final RedisSortedSetCommands<String, String> sync = this.redisConnection.sync();
+            sync.zadd(key, time, jsonString);
         }
         catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    protected synchronized void receiveMessage(IChatReceiveCallback callback) {
-        Set<String> messages = this.receiveNewMessages();
-        if (messages == null) {
-            return;
-        }
+    protected synchronized void receiveMessage(final IChatReceiveCallback callback) {
+        long fromTime = this.lastReadTime;
+        long toTime = System.currentTimeMillis();
 
-        for (String message: messages) {
+        final RedisSortedSetCommands<String, String> sync = this.redisConnection.sync();
+        List<String> value = sync.zrangebyscore(key, Range.create(fromTime, toTime));
+
+        for (String message: value) {
             try {
                 callback.message(new JSONObject(message).toMap());
             }
             catch (JSONException e) {
             }
         }
-    }
 
-    protected Set<String> receiveNewMessages() {
-        long fromTime = this.lastReadTime;
-        long toTime = System.currentTimeMillis();
-
-        Set<String> logs = null;
-        try {
-            logs = this.jedis.zrangeByScore(key, fromTime, toTime);
-            this.lastReadTime = toTime;
-        }
-        catch (JSONException e) {
-        }
-
-        return logs;
+        this.lastReadTime = toTime;
     }
 }

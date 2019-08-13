@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.ironingot</groupId>
   <artifactId>CrossServerChat</artifactId>
-  <version>0.1</version>
+  <version>0.3</version>
   <name>CrossServerChat</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -29,14 +29,19 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>com.firebase</groupId>
-      <artifactId>firebase-token-generator</artifactId>
-      <version>2.0.0</version>
-    </dependency>
-    <dependency>
         <groupId>org.json</groupId>
         <artifactId>json</artifactId>
         <version>20180813</version>
+    </dependency>
+    <dependency>
+        <groupId>redis.clients</groupId>
+        <artifactId>jedis</artifactId>
+        <version>2.10.2</version>
+    </dependency>
+    <dependency>
+        <groupId>io.lettuce</groupId>
+        <artifactId>lettuce-core</artifactId>
+        <version>5.1.8.RELEASE</version>
     </dependency>
   </dependencies>
 
@@ -68,18 +73,38 @@
 					<minimizeJar>true</minimizeJar>
 					<artifactSet>
 						<includes>
-							<include>org.json:json</include>
-							<include>com.firebase:firebase-token-generator</include>
+							<include>io.lettuce:*</include>
+							<include>io.projectreactor:*</include>
+							<include>io.netty:*</include>
+							<include>org.reactivestreams:*</include>
+							<include>org.json:*</include>
+							<include>org.slf4j:*</include>
 						</includes>
 					</artifactSet>
 					<relocations>
 						<relocation>
-							<pattern>com.json</pattern>
-							<shadedPattern>net.ironingot.crossserverchat.depend.json</shadedPattern>
+							<pattern>io.lettuce</pattern>
+							<shadedPattern>net.ironingot.crossserverchat.depend.lettuce</shadedPattern>
 						</relocation>
 						<relocation>
-							<pattern>com.firebase</pattern>
-							<shadedPattern>net.ironingot.crossserverchat.depend.firebase</shadedPattern>
+							<pattern>io.projectreactor</pattern>
+							<shadedPattern>net.ironingot.crossserverchat.depend.projectreactor</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>io.netty</pattern>
+							<shadedPattern>net.ironingot.crossserverchat.depend.netty</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>org.reactivestreams</pattern>
+							<shadedPattern>net.ironingot.crossserverchat.depend.reactivestreams</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>org.slf4j</pattern>
+							<shadedPattern>net.ironingot.crossserverchat.depend.slf4j</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>org.json</pattern>
+							<shadedPattern>net.ironingot.crossserverchat.depend.json</shadedPattern>
 						</relocation>
 					</relocations>
 				</configuration>
