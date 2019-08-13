@@ -63,16 +63,16 @@ public class PlayerEventListener implements Listener, IChatReceiveCallback {
 
         if (isSystem) {
 
-            builder.append(ChatColor.DARK_GREEN).append("[").append(server)
-                .append("]").append(ChatColor.RESET).append(" ").append(message);
+            builder.append("[").append(ChatColor.BLUE).append(server)
+            .append(ChatColor.RESET).append("]").append(" ").append(message);
 
         } else {
             String senderName = (String) data.get("senderName");
             String senderWorld = (String) data.get("senderWorld");
             // String format = (String) data.get("format");
 
-            builder.append(ChatColor.DARK_GREEN).append("[").append(server)
-                .append("@").append(senderWorld).append("]").append(ChatColor.RESET)
+            builder.append("[").append(ChatColor.BLUE).append(server)
+                /*.append("@").append(senderWorld)*/.append(ChatColor.RESET).append("]")
                 .append("<").append(senderName).append("> ").append(message);
         }
         this.plugin.getServer().broadcastMessage(builder.toString());

@@ -82,7 +82,7 @@ public class RedisChatStorage implements IChatStorage {
         try {
             final RedisSortedSetCommands<String, String> sync = this.redisConnection.sync();
             sync.zadd(key, time, jsonString);
-            CrossServerChat.logger.info("Post: " + key + ", " + time + ", " + jsonString);
+            // CrossServerChat.logger.info("Post: " + key + ", " + time + ", " + jsonString);
         }
         catch (JSONException e) {
             e.printStackTrace();
@@ -95,7 +95,7 @@ public class RedisChatStorage implements IChatStorage {
 
         for (ScoredValue<String> value: scoredValue) {
             try {
-                CrossServerChat.logger.info("Receive: " + key + ", " + this.lastTime + ", " + value.getScore() + ":" + value.getValue());
+                // CrossServerChat.logger.info("Receive: " + key + ", " + this.lastTime + ", " + value.getScore() + ":" + value.getValue());
                 callback.message(new JSONObject(value.getValue()).toMap());
                 this.lastTime = (long)value.getScore() + 1;
             }
