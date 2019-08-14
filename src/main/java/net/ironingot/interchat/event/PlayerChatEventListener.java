@@ -1,6 +1,7 @@
 package net.ironingot.interchat.event;
 
 import net.ironingot.interchat.InterChatPlugin;
+import net.ironingot.interchat.storage.IMessageStoreSender;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,9 +14,11 @@ import java.util.HashMap;
 
 public class PlayerChatEventListener implements Listener {
     public InterChatPlugin plugin;
+    public IMessageStoreSender sender;
 
-    public PlayerChatEventListener(InterChatPlugin plugin) {
+    public PlayerChatEventListener(InterChatPlugin plugin, IMessageStoreSender sender) {
         this.plugin = plugin;
+        this.sender = sender;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -34,6 +37,6 @@ public class PlayerChatEventListener implements Listener {
         data.put("server", this.plugin.getConfigHandler().getServerIdentify());
         data.put("color", this.plugin.getConfigHandler().getServerColor());
         data.put("message", event.getMessage());
-        this.plugin.getInstance().getStorageInterface().post(data);
+        this.sender.post(data);
     }
 }

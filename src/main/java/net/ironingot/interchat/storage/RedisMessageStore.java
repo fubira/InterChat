@@ -16,7 +16,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class RedisMessageStore implements IMessageStore {
+public class RedisMessageStore implements IMessageStoreSender, IMessageStoreReceiver {
     private InterChatPlugin plugin;
 
     private RedisClient redisClient;
@@ -47,6 +47,7 @@ public class RedisMessageStore implements IMessageStore {
         }
     }
 
+    // Implement: IMessageStorePost
     public void post(final Map<String, Object> data) {
         if (this.redisConnection == null) {
             InterChat.logger.warning("InterChat post failed: redisConnection is close.");
@@ -61,7 +62,8 @@ public class RedisMessageStore implements IMessageStore {
         }.runTaskAsynchronously(this.plugin);
     }
 
-    public void receive(final IMessageReceiver receiver) {
+    // Implement: IMessageStoreReceive
+    public void receive(final IMessageBroadcastor broadcastor) {
         if (this.redisConnection == null) {
             InterChat.logger.warning("InterChat receive failed: redisConnection is close.");
             return;
@@ -70,7 +72,7 @@ public class RedisMessageStore implements IMessageStore {
         new BukkitRunnable() {
             @Override
             public void run() {
-                receiveMessage(receiver);
+                receiveMessage(broadcastor);
             }
         }.runTask(this.plugin);
     }
@@ -89,14 +91,14 @@ public class RedisMessageStore implements IMessageStore {
         }
     }
 
-    protected void receiveMessage(final IMessageReceiver receiver) {
+    protected void receiveMessage(final IMessageBroadcastor broadcastor) {
         final RedisSortedSetCommands<String, String> sync = this.redisConnection.sync();
         List<ScoredValue<String>> scoredValue = sync.zrangebyscoreWithScores(key, Range.create(this.lastTime, Double.POSITIVE_INFINITY));
 
         for (ScoredValue<String> value: scoredValue) {
             try {
                 // InterChat.logger.info("Receive: " + key + ", " + this.lastTime + ", " + value.getScore() + ":" + value.getValue());
-                receiver.receive(new JSONObject(value.getValue()).toMap());
+                broadcastor.broadcast(new JSONObject(value.getValue()).toMap());
                 this.lastTime = (long)value.getScore() + 1;
             }
             catch (JSONException e) {

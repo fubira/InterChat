@@ -1,8 +1,8 @@
 package net.ironingot.interchat;
 
 import net.ironingot.interchat.InterChatPlugin;
-import net.ironingot.interchat.storage.IMessageReceiver;
-import net.ironingot.interchat.storage.IMessageStore;
+import net.ironingot.interchat.storage.IMessageBroadcastor;
+import net.ironingot.interchat.storage.IMessageStoreReceiver;
 import net.ironingot.interchat.storage.RedisMessageStore;
 import net.ironingot.interchat.event.PlayerChatEventListener;
 import net.ironingot.interchat.event.PlayerJoinLeaveEventListener;
@@ -15,7 +15,7 @@ import java.lang.StringBuilder;
 import java.util.Map;
 import java.util.logging.Logger;
 
-public class InterChat implements IMessageReceiver {
+public class InterChat implements IMessageBroadcastor {
     public static final Logger logger = Logger.getLogger("Minecraft");
     public InterChatPlugin plugin;
 
@@ -40,13 +40,9 @@ public class InterChat implements IMessageReceiver {
         this.redisMessageStore.close();
     }
 
-    public IMessageStore getStorageInterface() {
-        return this.redisMessageStore;
-    }
-
     protected void registerEvents() {
-        this.plugin.getServer().getPluginManager().registerEvents(new PlayerChatEventListener(this.plugin), this.plugin);
-        this.plugin.getServer().getPluginManager().registerEvents(new PlayerJoinLeaveEventListener(this.plugin), this.plugin);
+        this.plugin.getServer().getPluginManager().registerEvents(new PlayerChatEventListener(this.plugin, this.redisMessageStore), this.plugin);
+        this.plugin.getServer().getPluginManager().registerEvents(new PlayerJoinLeaveEventListener(this.plugin, this.redisMessageStore), this.plugin);
     }
 
     protected void startReceiveTask() {
@@ -54,12 +50,12 @@ public class InterChat implements IMessageReceiver {
             chatReceiveTask.cancel();
         }
 
-        final IMessageReceiver messageReceiver = this;
-        final IMessageStore messageStore = this.redisMessageStore;
+        final IMessageStoreReceiver messageStoreReceiver = this.redisMessageStore;
+        final IMessageBroadcastor messageBroadcastor = this;
         chatReceiveTask = new BukkitRunnable() {
             @Override
             public void run() {
-                messageStore.receive(messageReceiver);
+                messageStoreReceiver.receive(messageBroadcastor);
             }
         }.runTaskTimer(plugin, 50, 40);
     }
@@ -71,8 +67,8 @@ public class InterChat implements IMessageReceiver {
         }
     }
 
-    // implement: IMessageReceiver
-    public void receive(Map<String, Object> data) {
+    // implement: IMessageBroadcastor
+    public void broadcast(Map<String, Object> data) {
         if (data == null) {
             return;
         }
