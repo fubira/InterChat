@@ -1,10 +1,8 @@
 package net.ironingot.interchat;
 
-import java.util.logging.Logger;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class InterChatPlugin extends JavaPlugin {
-    public static final Logger logger = Logger.getLogger("Minecraft");
     private ConfigHandler configHandler;
     private InterChat interChat;
     
@@ -18,7 +16,7 @@ public class InterChatPlugin extends JavaPlugin {
         this.interChat = new InterChat(this);
         this.interChat.enable();
 
-        InterChatPlugin.logger.info(
+        InterChat.logger.info(
             getDescription().getName() + "-" +
             getDescription().getVersion() + " is enabled!");
     }
@@ -26,7 +24,7 @@ public class InterChatPlugin extends JavaPlugin {
     public void onDisable() {
         this.interChat.disable();
 
-        InterChatPlugin.logger.info(
+        InterChat.logger.info(
             getDescription().getName() + "-" +
             getDescription().getVersion() + " is disabled");
     }

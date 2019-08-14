@@ -1,8 +1,7 @@
 package net.ironingot.interchat.storage;
 
 import net.ironingot.interchat.InterChatPlugin;
-import net.ironingot.interchat.interfaces.IChatReceiveCallback;
-import net.ironingot.interchat.interfaces.IChatStorage;
+import net.ironingot.interchat.InterChat;
 
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.Range;
@@ -17,7 +16,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class RedisChatStorage implements IChatStorage {
+public class RedisMessageStore implements IMessageStore {
     private InterChatPlugin plugin;
 
     private RedisClient redisClient;
@@ -25,7 +24,7 @@ public class RedisChatStorage implements IChatStorage {
     private String key = "logs";
     private long lastTime;
 
-    public RedisChatStorage(InterChatPlugin plugin) {
+    public RedisMessageStore(InterChatPlugin plugin) {
         this.plugin = plugin;
         this.redisClient = null;
     }
@@ -50,7 +49,7 @@ public class RedisChatStorage implements IChatStorage {
 
     public void post(final Map<String, Object> data) {
         if (this.redisConnection == null) {
-            InterChatPlugin.logger.warning("InterChat post failed: redisConnection is close.");
+            InterChat.logger.warning("InterChat post failed: redisConnection is close.");
             return;
         }
 
@@ -62,16 +61,16 @@ public class RedisChatStorage implements IChatStorage {
         }.runTaskAsynchronously(this.plugin);
     }
 
-    public void receive(final IChatReceiveCallback callback) {
+    public void receive(final IMessageReceiver receiver) {
         if (this.redisConnection == null) {
-            InterChatPlugin.logger.warning("InterChat receive failed: redisConnection is close.");
+            InterChat.logger.warning("InterChat receive failed: redisConnection is close.");
             return;
         }
 
         new BukkitRunnable() {
             @Override
             public void run() {
-                receiveMessage(callback);
+                receiveMessage(receiver);
             }
         }.runTask(this.plugin);
     }
@@ -90,14 +89,14 @@ public class RedisChatStorage implements IChatStorage {
         }
     }
 
-    protected void receiveMessage(final IChatReceiveCallback callback) {
+    protected void receiveMessage(final IMessageReceiver receiver) {
         final RedisSortedSetCommands<String, String> sync = this.redisConnection.sync();
         List<ScoredValue<String>> scoredValue = sync.zrangebyscoreWithScores(key, Range.create(this.lastTime, Double.POSITIVE_INFINITY));
 
         for (ScoredValue<String> value: scoredValue) {
             try {
                 // InterChat.logger.info("Receive: " + key + ", " + this.lastTime + ", " + value.getScore() + ":" + value.getValue());
-                callback.message(new JSONObject(value.getValue()).toMap());
+                receiver.receive(new JSONObject(value.getValue()).toMap());
                 this.lastTime = (long)value.getScore() + 1;
             }
             catch (JSONException e) {
