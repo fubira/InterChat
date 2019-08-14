@@ -3,7 +3,6 @@ package net.ironingot.interchat;
 import java.util.logging.Logger;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import net.ironingot.interchat.config.ConfigHandler;
 import net.ironingot.interchat.event.PlayerEventListener;
 import net.ironingot.interchat.storage.RedisChatStorage;
 import net.ironingot.interchat.interfaces.IChatStorage;
@@ -42,7 +41,6 @@ public class InterChatPlugin extends JavaPlugin {
     }
 
     public void reload() {
-        this.reloadConfig();
         this.configHandler = new ConfigHandler(this);
     }
 
