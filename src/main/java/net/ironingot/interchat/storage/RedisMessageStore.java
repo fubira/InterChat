@@ -22,6 +22,7 @@ public class RedisMessageStore implements IMessageStoreSender, IMessageStoreRece
     private RedisClient redisClient;
     private StatefulRedisConnection<String, String> redisConnection;
     private String key = "logs";
+    private long expireMillis = 1000 * 60 * 60 * 24;
     private long lastTime;
 
     public RedisMessageStore(InterChatPlugin plugin) {
@@ -34,6 +35,9 @@ public class RedisMessageStore implements IMessageStoreSender, IMessageStoreRece
             this.redisClient = RedisClient.create(this.plugin.getConfigHandler().getRedisURI());
             this.redisConnection = this.redisClient.connect();
             this.lastTime = System.currentTimeMillis();
+
+            // 古いメッセージを削除しておく
+            this.expireMessage();
         }
     }
 
@@ -75,6 +79,12 @@ public class RedisMessageStore implements IMessageStoreSender, IMessageStoreRece
                 receiveMessage(broadcastor);
             }
         }.runTask(this.plugin);
+    }
+
+    protected void expireMessage() {
+        final long time = System.currentTimeMillis();
+        final RedisSortedSetCommands<String, String> sync = this.redisConnection.sync();
+        sync.zremrangebyscore(key, Range.create(0, time - expireMillis));
     }
 
     protected void postMessage(final Map<String, Object> data) {
