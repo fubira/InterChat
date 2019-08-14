@@ -1,39 +1,57 @@
-package net.ironingot.interchat.event;
+package net.ironingot.interchat;
 
 import net.ironingot.interchat.InterChatPlugin;
 import net.ironingot.interchat.interfaces.IChatReceiveCallback;
 import net.ironingot.interchat.interfaces.IChatStorage;
+import net.ironingot.interchat.storage.RedisChatStorage;
+import net.ironingot.interchat.event.PlayerChatEventListener;
+import net.ironingot.interchat.event.PlayerJoinLeaveEventListener;
 
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.StringBuilder;
 import java.util.Map;
-import java.util.HashMap;
 
-public class PlayerEventListener implements Listener, IChatReceiveCallback {
+public class InterChat implements IChatReceiveCallback {
     public InterChatPlugin plugin;
     public BukkitTask chatReceiveTask = null;
+    public RedisChatStorage chatStorage;
 
-    public PlayerEventListener(InterChatPlugin plugin) {
+    public InterChat(InterChatPlugin plugin) {
         this.plugin = plugin;
+        this.chatStorage = new RedisChatStorage(this.plugin);
+        registerEvents();
     }
 
-    public void startReceive() {
+    public void enable() {
+        this.chatStorage.open();
+        this.startReceiveTask();
+    }
+
+    public void disable() {
+        this.plugin.getServer().getScheduler().cancelTasks(this.plugin);
+        this.stopReceiveTask();
+        this.chatStorage.close();
+    }
+
+    public IChatStorage getStorageInterface() {
+        return this.chatStorage;
+    }
+
+    protected void registerEvents() {
+        this.plugin.getServer().getPluginManager().registerEvents(new PlayerChatEventListener(this.plugin), this.plugin);
+        this.plugin.getServer().getPluginManager().registerEvents(new PlayerJoinLeaveEventListener(this.plugin), this.plugin);
+    }
+
+    protected void startReceiveTask() {
         if (chatReceiveTask != null) {
             chatReceiveTask.cancel();
         }
 
         final IChatReceiveCallback callback = this;
-        final IChatStorage chatStorage = this.plugin.getChatStorage();
+        final IChatStorage chatStorage = this.chatStorage;
         chatReceiveTask = new BukkitRunnable() {
             @Override
             public void run() {
@@ -42,7 +60,7 @@ public class PlayerEventListener implements Listener, IChatReceiveCallback {
         }.runTaskTimer(plugin, 50, 30);
     }
 
-    public void stopReceive() {
+    protected void stopReceiveTask() {
         if (chatReceiveTask != null) {
             chatReceiveTask.cancel();
             chatReceiveTask = null;
@@ -88,45 +106,5 @@ public class PlayerEventListener implements Listener, IChatReceiveCallback {
                 .append(message);
         }
         this.plugin.getServer().broadcastMessage(builder.toString());
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
-        Player player = event.getPlayer();
-
-        if (event.getMessage().startsWith("/")) {
-            return;
-        }
-
-        Map<String, Object> data = new HashMap<String, Object>();
-        data.put("isSystem", new Boolean(false));
-        data.put("senderName", player.getName());
-        data.put("senderUUID", player.getUniqueId());
-        data.put("senderWorld", player.getWorld().getName());
-        data.put("server", this.plugin.getConfigHandler().getServerIdentify());
-        data.put("color", this.plugin.getConfigHandler().getServerColor());
-        data.put("message", event.getMessage());
-        // data.put("format", event.getFormat());
-        this.plugin.getChatStorage().post(data);
-    }
-
-    @EventHandler()
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        Map<String, Object> data = new HashMap<String, Object>();
-        data.put("isSystem", new Boolean(true));
-        data.put("server", this.plugin.getConfigHandler().getServerIdentify());
-        data.put("color", this.plugin.getConfigHandler().getServerColor());
-        data.put("message", event.getJoinMessage());
-        this.plugin.getChatStorage().post(data);
-    }
-
-    @EventHandler()
-    public void onPlayerLogout(PlayerQuitEvent event) {
-        Map<String, Object> data = new HashMap<String, Object>();
-        data.put("isSystem", new Boolean(true));
-        data.put("server", this.plugin.getConfigHandler().getServerIdentify());
-        data.put("color", this.plugin.getConfigHandler().getServerColor());
-        data.put("message", event.getQuitMessage());
-        this.plugin.getChatStorage().post(data);
     }
 }
