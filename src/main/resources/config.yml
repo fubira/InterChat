@@ -1,6 +1,6 @@
 server:
-  identify: "SERVER NAME"
+  identify: "NAME"
+  color: GOLD
 
 redis: 
   uri: "[REDIS URI]"
-

@@ -3,8 +3,6 @@ package net.ironingot.crossserverchat;
 import java.util.logging.Logger;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import org.bukkit.scheduler.BukkitRunnable;
-
 public class CrossServerChat extends JavaPlugin {
     public static final Logger logger = Logger.getLogger("Minecraft");
     private ConfigHandler configHandler;
@@ -36,6 +34,11 @@ public class CrossServerChat extends JavaPlugin {
         CrossServerChat.logger.info(
             getDescription().getName() + "-" +
             getDescription().getVersion() + " is disabled");
+    }
+
+    public void reload() {
+        this.reloadConfig();
+        this.configHandler = new ConfigHandler(this);
     }
 
     public ConfigHandler getConfigHandler() {

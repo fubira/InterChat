@@ -27,15 +27,12 @@ public class ConfigHandler {
 
     public void load() {
         ConfigurationSection section = config.getConfigurationSection("CrossServerChat");
-
         if (section != null) {
             for (String key : section.getKeys(false)) {
-
                 config.set(key, section.get(key));
             }
         } 
-
-        save();
+        // save();
     }
 
     public void save() {
@@ -48,6 +45,11 @@ public class ConfigHandler {
 
     public String getServerIdentify() {
         String path = "server.identify";
+        return (String)config.get(path);
+    }
+
+    public String getServerColor() {
+        String path = "server.color";
         return (String)config.get(path);
     }
 

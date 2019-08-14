@@ -32,7 +32,7 @@ public class CommandHandler implements CommandExecutor {
             return true;
         }
         if (command.equals("reload")) {
-            this.plugin.reloadConfig();
+            this.plugin.reload();
             sender.sendMessage(ChatColor.GOLD + this.pluginName + ": configuration reloaded.");
             return true;
         }

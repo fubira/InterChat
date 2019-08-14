@@ -56,24 +56,34 @@ public class PlayerEventListener implements Listener, IChatReceiveCallback {
         final StringBuilder builder = new StringBuilder();
         String message = (String) data.get("message");
         String server = (String) data.get("server");
+        String color = (String) data.get("color");
 
         if (this.plugin.getConfigHandler().getServerIdentify().equals(server)) {
             return;
         }
 
-        if (isSystem) {
+        ChatColor serverColor = ChatColor.GRAY;
+        if (color != null) {
+            try {
+                serverColor = ChatColor.valueOf(color);
+            } catch (IllegalArgumentException e) {}
+        }
 
-            builder.append("[").append(ChatColor.BLUE).append(server)
-            .append(ChatColor.RESET).append("]").append(" ").append(message);
+        if (isSystem) {
+            builder.append(ChatColor.DARK_GRAY).append("[")
+                .append(serverColor).append(server)
+                .append(ChatColor.DARK_GRAY).append("]")
+                .append(ChatColor.RESET).append(" ")
+                .append(message);
 
         } else {
             String senderName = (String) data.get("senderName");
-            String senderWorld = (String) data.get("senderWorld");
-            // String format = (String) data.get("format");
-
-            builder.append("[").append(ChatColor.BLUE).append(server)
-                /*.append("@").append(senderWorld)*/.append(ChatColor.RESET).append("]")
-                .append("<").append(senderName).append("> ").append(message);
+            builder.append(ChatColor.DARK_GRAY).append("[")
+                .append(serverColor).append(server)
+                .append(ChatColor.DARK_GRAY).append("]")
+                .append(ChatColor.RESET)
+                .append("<").append(senderName).append("> ")
+                .append(message);
         }
         this.plugin.getServer().broadcastMessage(builder.toString());
     }
@@ -92,8 +102,9 @@ public class PlayerEventListener implements Listener, IChatReceiveCallback {
         data.put("senderUUID", player.getUniqueId());
         data.put("senderWorld", player.getWorld().getName());
         data.put("server", this.plugin.getConfigHandler().getServerIdentify());
+        data.put("color", this.plugin.getConfigHandler().getServerColor());
         data.put("message", event.getMessage());
-        data.put("format", event.getFormat());
+        // data.put("format", event.getFormat());
         this.plugin.getChatStorage().post(data);
     }
 
@@ -102,6 +113,7 @@ public class PlayerEventListener implements Listener, IChatReceiveCallback {
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("isSystem", new Boolean(true));
         data.put("server", this.plugin.getConfigHandler().getServerIdentify());
+        data.put("color", this.plugin.getConfigHandler().getServerColor());
         data.put("message", event.getJoinMessage());
         this.plugin.getChatStorage().post(data);
     }
@@ -111,6 +123,7 @@ public class PlayerEventListener implements Listener, IChatReceiveCallback {
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("isSystem", new Boolean(true));
         data.put("server", this.plugin.getConfigHandler().getServerIdentify());
+        data.put("color", this.plugin.getConfigHandler().getServerColor());
         data.put("message", event.getQuitMessage());
         this.plugin.getChatStorage().post(data);
     }
