@@ -1,5 +1,5 @@
-CrossServerChat
-===============
+InterChat
+=========
 
 Compilation
 -----------

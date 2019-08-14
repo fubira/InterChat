@@ -1,5 +1,5 @@
 server:
-  identify: "NAME"
+  identify: "SERVER"
   color: GOLD
 
 redis: 

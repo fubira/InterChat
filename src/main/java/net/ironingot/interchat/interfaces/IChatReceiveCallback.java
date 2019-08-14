@@ -1,4 +1,4 @@
-package net.ironingot.crossserverchat;
+package net.ironingot.interchat.interfaces;
 
 import java.util.Map;
 

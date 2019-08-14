@@ -1,4 +1,6 @@
-package net.ironingot.crossserverchat;
+package net.ironingot.interchat.config;
+
+import net.ironingot.interchat.InterChatPlugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,11 +9,11 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 public class ConfigHandler {
-    private CrossServerChat plugin;
+    private InterChatPlugin plugin;
     private File configFile;
     private YamlConfiguration config;
 
-    public ConfigHandler(CrossServerChat plugin) {
+    public ConfigHandler(InterChatPlugin plugin) {
         this.plugin = plugin;
 
         this.configFile = new File(plugin.getDataFolder(), "config.yml");
@@ -26,13 +28,12 @@ public class ConfigHandler {
     }
 
     public void load() {
-        ConfigurationSection section = config.getConfigurationSection("CrossServerChat");
+        ConfigurationSection section = config.getConfigurationSection("InterChat");
         if (section != null) {
             for (String key : section.getKeys(false)) {
                 config.set(key, section.get(key));
             }
         } 
-        // save();
     }
 
     public void save() {

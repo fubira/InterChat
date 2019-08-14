@@ -1,12 +1,12 @@
-name: CrossServerChat
+name: InterChat
 author: fubira
-main: net.ironingot.crossserverchat.CrossServerChat
-version: 0.3
+main: net.ironingot.interchat.InterChat
+version: 0.4.0
 commands:
-  crossserverchat:
-    aliases: [csc]
-    permissions: crossserverchat.command
-    description: CrossServerChat
+  interchat:
+    aliases: [ic]
+    permissions: interchat.command
+    description: InterChat
     usage:
       /<command> 
       /<command> version

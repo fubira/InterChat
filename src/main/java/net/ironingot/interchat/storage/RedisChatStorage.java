@@ -1,29 +1,31 @@
-package net.ironingot.crossserverchat;
+package net.ironingot.interchat.storage;
 
-import org.bukkit.scheduler.BukkitRunnable;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.List;
-import java.util.Map;
+import net.ironingot.interchat.InterChatPlugin;
+import net.ironingot.interchat.interfaces.IChatReceiveCallback;
+import net.ironingot.interchat.interfaces.IChatStorage;
 
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.Range;
 import io.lettuce.core.ScoredValue;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisSortedSetCommands;
-import io.lettuce.core.api.sync.RedisListCommands;
+
+import java.util.List;
+import java.util.Map;
+
+import org.bukkit.scheduler.BukkitRunnable;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class RedisChatStorage implements IChatStorage {
-    private CrossServerChat plugin;
+    private InterChatPlugin plugin;
 
     private RedisClient redisClient;
     private StatefulRedisConnection<String, String> redisConnection;
     private String key = "logs";
     private long lastTime;
 
-    public RedisChatStorage(CrossServerChat plugin) {
+    public RedisChatStorage(InterChatPlugin plugin) {
         this.plugin = plugin;
         this.redisClient = null;
     }
@@ -38,7 +40,6 @@ public class RedisChatStorage implements IChatStorage {
 
     public void close() {
         if (this.redisConnection != null) {
-            // this.redisConnection.close();
             this.redisConnection = null;
         }
         if (this.redisClient != null) {
@@ -49,7 +50,7 @@ public class RedisChatStorage implements IChatStorage {
 
     public void post(final Map<String, Object> data) {
         if (this.redisConnection == null) {
-            CrossServerChat.logger.warning("CrossServerChat post failed: redisConnection is close.");
+            InterChatPlugin.logger.warning("InterChat post failed: redisConnection is close.");
             return;
         }
 
@@ -63,7 +64,7 @@ public class RedisChatStorage implements IChatStorage {
 
     public void receive(final IChatReceiveCallback callback) {
         if (this.redisConnection == null) {
-            CrossServerChat.logger.warning("CrossServerChat receive failed: redisConnection is close.");
+            InterChatPlugin.logger.warning("InterChat receive failed: redisConnection is close.");
             return;
         }
 
@@ -82,7 +83,7 @@ public class RedisChatStorage implements IChatStorage {
         try {
             final RedisSortedSetCommands<String, String> sync = this.redisConnection.sync();
             sync.zadd(key, time, jsonString);
-            // CrossServerChat.logger.info("Post: " + key + ", " + time + ", " + jsonString);
+            // InterChat.logger.info("Post: " + key + ", " + time + ", " + jsonString);
         }
         catch (JSONException e) {
             e.printStackTrace();
@@ -95,7 +96,7 @@ public class RedisChatStorage implements IChatStorage {
 
         for (ScoredValue<String> value: scoredValue) {
             try {
-                // CrossServerChat.logger.info("Receive: " + key + ", " + this.lastTime + ", " + value.getScore() + ":" + value.getValue());
+                // InterChat.logger.info("Receive: " + key + ", " + this.lastTime + ", " + value.getScore() + ":" + value.getValue());
                 callback.message(new JSONObject(value.getValue()).toMap());
                 this.lastTime = (long)value.getScore() + 1;
             }

@@ -1,9 +1,14 @@
-package net.ironingot.crossserverchat;
+package net.ironingot.interchat;
 
 import java.util.logging.Logger;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class CrossServerChat extends JavaPlugin {
+import net.ironingot.interchat.config.ConfigHandler;
+import net.ironingot.interchat.event.PlayerEventListener;
+import net.ironingot.interchat.storage.RedisChatStorage;
+import net.ironingot.interchat.interfaces.IChatStorage;
+
+public class InterChatPlugin extends JavaPlugin {
     public static final Logger logger = Logger.getLogger("Minecraft");
     private ConfigHandler configHandler;
     private RedisChatStorage chatStorage;
@@ -14,13 +19,13 @@ public class CrossServerChat extends JavaPlugin {
         this.chatStorage = new RedisChatStorage(this);
         this.playerEventListener = new PlayerEventListener(this);
 
-        getCommand("crossserverchat").setExecutor(new CommandHandler(this));
+        getCommand("interchat").setExecutor(new CommandHandler(this));
         getServer().getPluginManager().registerEvents(this.playerEventListener, this);
 
         chatStorage.open();
         playerEventListener.startReceive();
 
-        CrossServerChat.logger.info(
+        InterChatPlugin.logger.info(
             getDescription().getName() + "-" +
             getDescription().getVersion() + " is enabled!");
     }
@@ -31,7 +36,7 @@ public class CrossServerChat extends JavaPlugin {
         this.playerEventListener.stopReceive();
         this.chatStorage.close();
 
-        CrossServerChat.logger.info(
+        InterChatPlugin.logger.info(
             getDescription().getName() + "-" +
             getDescription().getVersion() + " is disabled");
     }

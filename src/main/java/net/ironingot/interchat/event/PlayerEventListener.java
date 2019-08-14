@@ -1,4 +1,8 @@
-package net.ironingot.crossserverchat;
+package net.ironingot.interchat.event;
+
+import net.ironingot.interchat.InterChatPlugin;
+import net.ironingot.interchat.interfaces.IChatReceiveCallback;
+import net.ironingot.interchat.interfaces.IChatStorage;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -16,10 +20,10 @@ import java.util.Map;
 import java.util.HashMap;
 
 public class PlayerEventListener implements Listener, IChatReceiveCallback {
-    public CrossServerChat plugin;
+    public InterChatPlugin plugin;
     public BukkitTask chatReceiveTask = null;
 
-    public PlayerEventListener(CrossServerChat plugin) {
+    public PlayerEventListener(InterChatPlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -27,7 +31,6 @@ public class PlayerEventListener implements Listener, IChatReceiveCallback {
         if (chatReceiveTask != null) {
             chatReceiveTask.cancel();
         }
-        CrossServerChat.logger.info("startReceive");
 
         final IChatReceiveCallback callback = this;
         final IChatStorage chatStorage = this.plugin.getChatStorage();
@@ -40,7 +43,6 @@ public class PlayerEventListener implements Listener, IChatReceiveCallback {
     }
 
     public void stopReceive() {
-        CrossServerChat.logger.info("stopReceive");
         if (chatReceiveTask != null) {
             chatReceiveTask.cancel();
             chatReceiveTask = null;

@@ -1,13 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.ironingot</groupId>
-  <artifactId>CrossServerChat</artifactId>
-  <version>0.3</version>
-  <name>CrossServerChat</name>
+  <artifactId>InterChat</artifactId>
+  <version>0.4.0</version>
+  <name>InterChat</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
-  <url>https://github.com/fubira/CrossServerChat</url>
+  <url>https://github.com/fubira/InterChat</url>
 
   <repositories>
     <repository>
@@ -84,27 +84,27 @@
 					<relocations>
 						<relocation>
 							<pattern>io.lettuce</pattern>
-							<shadedPattern>net.ironingot.crossserverchat.depend.lettuce</shadedPattern>
+							<shadedPattern>net.ironingot.interchat.depend.lettuce</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>io.projectreactor</pattern>
-							<shadedPattern>net.ironingot.crossserverchat.depend.projectreactor</shadedPattern>
+							<shadedPattern>net.ironingot.interchat.depend.projectreactor</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>io.netty</pattern>
-							<shadedPattern>net.ironingot.crossserverchat.depend.netty</shadedPattern>
+							<shadedPattern>net.ironingot.interchat.depend.netty</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>org.reactivestreams</pattern>
-							<shadedPattern>net.ironingot.crossserverchat.depend.reactivestreams</shadedPattern>
+							<shadedPattern>net.ironingot.interchat.depend.reactivestreams</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>org.slf4j</pattern>
-							<shadedPattern>net.ironingot.crossserverchat.depend.slf4j</shadedPattern>
+							<shadedPattern>net.ironingot.interchat.depend.slf4j</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>org.json</pattern>
-							<shadedPattern>net.ironingot.crossserverchat.depend.json</shadedPattern>
+							<shadedPattern>net.ironingot.interchat.depend.json</shadedPattern>
 						</relocation>
 					</relocations>
 				</configuration>
