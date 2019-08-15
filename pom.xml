@@ -59,67 +59,65 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
+        <version>3.8.0</version>
         <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
+          <source>1.8</source>
+          <target>1.8</target>
           <encoding>UTF-8</encoding>
         </configuration>
       </plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>2.4.3</version>
-				<configuration>
-					<minimizeJar>true</minimizeJar>
-					<artifactSet>
-						<includes>
-							<include>io.lettuce:*</include>
-							<include>io.projectreactor:*</include>
-							<include>io.netty:*</include>
-							<include>org.reactivestreams:*</include>
-							<include>org.json:*</include>
-							<include>org.slf4j:*</include>
-						</includes>
-					</artifactSet>
-					<relocations>
-						<relocation>
-							<pattern>io.lettuce</pattern>
-							<shadedPattern>net.ironingot.interchat.depend.lettuce</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>io.projectreactor</pattern>
-							<shadedPattern>net.ironingot.interchat.depend.projectreactor</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>io.netty</pattern>
-							<shadedPattern>net.ironingot.interchat.depend.netty</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>org.reactivestreams</pattern>
-							<shadedPattern>net.ironingot.interchat.depend.reactivestreams</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>org.slf4j</pattern>
-							<shadedPattern>net.ironingot.interchat.depend.slf4j</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>org.json</pattern>
-							<shadedPattern>net.ironingot.interchat.depend.json</shadedPattern>
-						</relocation>
-					</relocations>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>2.4.3</version>
+        <configuration>
+          <minimizeJar>true</minimizeJar>
+          <artifactSet>
+            <includes>
+              <include>io.lettuce:*</include>
+              <include>io.projectreactor:*</include>
+              <include>io.netty:*</include>
+              <include>org.reactivestreams:*</include>
+              <include>org.json:*</include>
+              <include>org.slf4j:*</include>
+            </includes>
+          </artifactSet>
+          <relocations>
+            <relocation>
+              <pattern>io.lettuce</pattern>
+              <shadedPattern>net.ironingot.interchat.depend.lettuce</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>io.projectreactor</pattern>
+              <shadedPattern>net.ironingot.interchat.depend.projectreactor</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>io.netty</pattern>
+              <shadedPattern>net.ironingot.interchat.depend.netty</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>org.reactivestreams</pattern>
+              <shadedPattern>net.ironingot.interchat.depend.reactivestreams</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>org.slf4j</pattern>
+              <shadedPattern>net.ironingot.interchat.depend.slf4j</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>org.json</pattern>
+              <shadedPattern>net.ironingot.interchat.depend.json</shadedPattern>
+            </relocation>
+          </relocations>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>
