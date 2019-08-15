@@ -38,6 +38,13 @@
         <artifactId>lettuce-core</artifactId>
         <version>5.1.8.RELEASE</version>
     </dependency>
+    <dependency>
+        <groupId>com.gmail.fyrvelm</groupId>
+        <artifactId>ChatCo</artifactId>
+        <version>0.24</version>
+        <scope>system</scope>
+        <systemPath>${basedir}/lib/ChatCo.jar</systemPath>
+    </dependency>
   </dependencies>
 
   <build>
