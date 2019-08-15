@@ -25,9 +25,8 @@ class IgnoreList {
 
         try {
             if (chatco != null) {
-                InterChat.logger.info("ignored: " + chatco.getCCPlayer(player).getIgnoreList());
                 ignored = chatco.getCCPlayer(player).isIgnored(fromName);
-                InterChat.logger.info("from: " + fromName + " to: " + player.getName() + " ignored: " + ignored);
+                // InterChat.logger.info("from: " + fromName + " to: " + player.getName() + " ignored: " + ignored);
             }
         } catch (IOException e) {}
         
