@@ -1,6 +1,5 @@
 package net.ironingot.interchat;
 
-import net.ironingot.interchat.InterChatPlugin;
 import net.ironingot.interchat.storage.IMessageBroadcastor;
 import net.ironingot.interchat.storage.IMessageStoreReceiver;
 import net.ironingot.interchat.storage.RedisMessageStore;
@@ -10,6 +9,7 @@ import net.ironingot.interchat.event.PlayerJoinLeaveEventListener;
 import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.entity.Player;
 
 import java.lang.StringBuilder;
 import java.util.Map;
@@ -20,29 +20,31 @@ public class InterChat implements IMessageBroadcastor {
     public InterChatPlugin plugin;
 
     public BukkitTask chatReceiveTask = null;
-    public RedisMessageStore redisMessageStore;
+    public RedisMessageStore messageStore;
+    public IgnoreList ignoreList;
 
     public InterChat(InterChatPlugin plugin) {
         this.plugin = plugin;
  
-        this.redisMessageStore = new RedisMessageStore(this.plugin);
+        this.messageStore = new RedisMessageStore(this.plugin);
+        this.ignoreList = new IgnoreList(this.plugin);
         registerEvents();
     }
 
     public void enable() {
-        this.redisMessageStore.open();
+        this.messageStore.open();
         this.startReceiveTask();
     }
 
     public void disable() {
         this.plugin.getServer().getScheduler().cancelTasks(this.plugin);
         this.stopReceiveTask();
-        this.redisMessageStore.close();
+        this.messageStore.close();
     }
 
     protected void registerEvents() {
-        this.plugin.getServer().getPluginManager().registerEvents(new PlayerChatEventListener(this.plugin, this.redisMessageStore), this.plugin);
-        this.plugin.getServer().getPluginManager().registerEvents(new PlayerJoinLeaveEventListener(this.plugin, this.redisMessageStore), this.plugin);
+        this.plugin.getServer().getPluginManager().registerEvents(new PlayerChatEventListener(this.plugin, this.messageStore), this.plugin);
+        this.plugin.getServer().getPluginManager().registerEvents(new PlayerJoinLeaveEventListener(this.plugin, this.messageStore), this.plugin);
     }
 
     protected void startReceiveTask() {
@@ -50,7 +52,7 @@ public class InterChat implements IMessageBroadcastor {
             chatReceiveTask.cancel();
         }
 
-        final IMessageStoreReceiver messageStoreReceiver = this.redisMessageStore;
+        final IMessageStoreReceiver messageStoreReceiver = this.messageStore;
         final IMessageBroadcastor messageBroadcastor = this;
         chatReceiveTask = new BukkitRunnable() {
             @Override
@@ -100,6 +102,12 @@ public class InterChat implements IMessageBroadcastor {
         }
         builder.append(message);
 
-        this.plugin.getServer().broadcastMessage(builder.toString());
+        String str = builder.toString();
+        for(Player player: this.plugin.getServer().getOnlinePlayers()) {
+            if (!ignoreList.isIgnored(player, senderName)) {
+                player.sendMessage(str);
+            }
+        }
+        // this.plugin.getServer().broadcastMessage(builder.toString());
     }
 }

@@ -11,6 +11,8 @@ import io.lettuce.core.api.sync.RedisSortedSetCommands;
 
 import java.util.List;
 import java.util.Map;
+import java.lang.Thread;
+import java.lang.InterruptedException;
 
 import org.bukkit.scheduler.BukkitRunnable;
 import org.json.JSONException;
@@ -42,7 +44,13 @@ public class RedisMessageStore implements IMessageStoreSender, IMessageStoreRece
     }
 
     public void close() {
+        try {
+            Thread.yield();
+            Thread.sleep(200);
+        } catch (InterruptedException e) {}
+
         if (this.redisConnection != null) {
+            this.redisConnection.close();
             this.redisConnection = null;
         }
         if (this.redisClient != null) {
