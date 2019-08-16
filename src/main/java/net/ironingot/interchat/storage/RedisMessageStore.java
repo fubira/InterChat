@@ -27,7 +27,7 @@ public class RedisMessageStore implements IMessageStoreSender, IMessageStoreRece
     private RedisClient redisClient;
     private StatefulRedisConnection<String, String> redisConnection;
     private String key = "logs";
-    private long expireMillis = 1000 * 60 * 60 * 24;
+    private long expireMillis = 1000 * 60 * 10;
     private long lastTime;
 
     public RedisMessageStore(InterChatPlugin plugin) {
