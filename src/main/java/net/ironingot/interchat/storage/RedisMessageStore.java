@@ -5,14 +5,17 @@ import net.ironingot.interchat.InterChat;
 
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.Range;
+import io.lettuce.core.RedisCommandTimeoutException;
 import io.lettuce.core.ScoredValue;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisSortedSetCommands;
+
 
 import java.util.List;
 import java.util.Map;
 import java.lang.Thread;
 import java.lang.InterruptedException;
+import java.time.Duration;
 
 import org.bukkit.scheduler.BukkitRunnable;
 import org.json.JSONException;
@@ -35,6 +38,7 @@ public class RedisMessageStore implements IMessageStoreSender, IMessageStoreRece
     public void open() {
         if (this.redisClient == null) {
             this.redisClient = RedisClient.create(this.plugin.getConfigHandler().getRedisURI());
+            this.redisClient.setDefaultTimeout(Duration.ofSeconds(10));
             this.redisConnection = this.redisClient.connect();
             this.lastTime = System.currentTimeMillis();
 
@@ -104,23 +108,23 @@ public class RedisMessageStore implements IMessageStoreSender, IMessageStoreRece
             sync.zadd(key, time, jsonString);
             // InterChat.logger.info("Post: " + key + ", " + time + ", " + jsonString);
         }
-        catch (JSONException e) {
-            e.printStackTrace();
-        }
+        catch (JSONException e) {}
+        catch (RedisCommandTimeoutException e) {}
     }
 
     protected void receiveMessage(final IMessageBroadcastor broadcastor) {
-        final RedisSortedSetCommands<String, String> sync = this.redisConnection.sync();
-        List<ScoredValue<String>> scoredValue = sync.zrangebyscoreWithScores(key, Range.create(this.lastTime, Double.POSITIVE_INFINITY));
-
-        for (ScoredValue<String> value: scoredValue) {
-            try {
-                // InterChat.logger.info("Receive: " + key + ", " + this.lastTime + ", " + value.getScore() + ":" + value.getValue());
-                broadcastor.broadcast(new JSONObject(value.getValue()).toMap());
-                this.lastTime = (long)value.getScore() + 1;
-            }
-            catch (JSONException e) {
+        try {
+            final RedisSortedSetCommands<String, String> sync = this.redisConnection.sync();
+            List<ScoredValue<String>> scoredValue = sync.zrangebyscoreWithScores(key, Range.create(this.lastTime, Double.POSITIVE_INFINITY));
+            for (ScoredValue<String> value: scoredValue) {
+                try {
+                    // InterChat.logger.info("Receive: " + key + ", " + this.lastTime + ", " + value.getScore() + ":" + value.getValue());
+                    broadcastor.broadcast(new JSONObject(value.getValue()).toMap());
+                    this.lastTime = (long)value.getScore() + 1;
+                }
+                catch (JSONException e) {}
             }
         }
+        catch (RedisCommandTimeoutException e) {}
     }
 }
