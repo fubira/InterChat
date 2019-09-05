@@ -48,19 +48,22 @@ public class RedisMessageStore implements IMessageStoreSender, IMessageStoreRece
     }
 
     public void close() {
-        try {
-            Thread.yield();
-            Thread.sleep(500);
-        } catch (InterruptedException e) {}
+        final RedisClient closingRedisClient = this.redisClient ;
+        final StatefulRedisConnection<String, String> closingRedisConnection = this.redisConnection;
+        this.redisConnection = null;
+        this.redisClient = null;
 
-        if (this.redisConnection != null) {
-            this.redisConnection.close();
-            this.redisConnection = null;
-        }
-        if (this.redisClient != null) {
-            this.redisClient.shutdown();
-            this.redisClient = null;
-        }
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (closingRedisClient != null) {
+                    closingRedisConnection.close();
+                }
+                if (closingRedisClient != null) {
+                    closingRedisClient.shutdown();
+                }
+            }
+        }.runTaskLater(this.plugin, 20);
     }
 
     // Implement: IMessageStorePost

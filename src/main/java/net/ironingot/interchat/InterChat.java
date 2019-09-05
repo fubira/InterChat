@@ -12,20 +12,26 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.entity.Player;
 
 import java.lang.StringBuilder;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
 public class InterChat implements IMessageBroadcastor {
     public static final Logger logger = Logger.getLogger("Minecraft");
     public InterChatPlugin plugin;
+    public InterChatProtocol protocol;
+    public InterChatFactory factory;
 
     public BukkitTask chatReceiveTask = null;
     public RedisMessageStore messageStore;
     public IgnoreList ignoreList;
+    public Map<String, Integer> externalPlayerCountMap = new HashMap<String, Integer>();
 
     public InterChat(InterChatPlugin plugin) {
         this.plugin = plugin;
- 
+        this.protocol = new InterChatProtocol(this.plugin);
+        this.factory = new InterChatFactory(this.plugin);
+        
         this.messageStore = new RedisMessageStore(this.plugin);
         this.ignoreList = new IgnoreList(this.plugin);
         registerEvents();
@@ -34,9 +40,11 @@ public class InterChat implements IMessageBroadcastor {
     public void enable() {
         this.messageStore.open();
         this.startReceiveTask();
+        this.messageStore.post(this.factory.makeServerStartMessage());
     }
 
     public void disable() {
+        // this.messageStore.post(this.factory.makeServerStopMessage());
         this.plugin.getServer().getScheduler().cancelTasks(this.plugin);
         this.stopReceiveTask();
         this.messageStore.close();
@@ -69,6 +77,17 @@ public class InterChat implements IMessageBroadcastor {
         }
     }
 
+    public int getTotalPlayerCount() {
+        int count = this.plugin.getServer().getOnlinePlayers().size();
+
+        for (String key: this.externalPlayerCountMap.keySet()) {
+            if (this.externalPlayerCountMap.containsKey(key)) {
+                count = count + this.externalPlayerCountMap.get(key);
+            }
+        }
+        return count;
+    }
+
     // implement: IMessageBroadcastor
     public void broadcast(Map<String, Object> data) {
         if (data == null) {
@@ -81,9 +100,14 @@ public class InterChat implements IMessageBroadcastor {
         String message = (String) data.get("message");
         String server = (String) data.get("server");
         String color = (String) data.get("color");
+        Integer playersCount = (Integer) data.get("players");
 
         if (this.plugin.getConfigHandler().getServerIdentify().equals(server)) {
             return;
+        }
+
+        if (playersCount != null) {
+            externalPlayerCountMap.put(server, playersCount);
         }
 
         ChatColor serverColor = ChatColor.GRAY;

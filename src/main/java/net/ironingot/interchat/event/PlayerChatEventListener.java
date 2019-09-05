@@ -24,19 +24,11 @@ public class PlayerChatEventListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
+        String message = event.getMessage();
 
-        if (event.getMessage().startsWith("/")) {
+        if (message.startsWith("/")) {
             return;
         }
-
-        Map<String, Object> data = new HashMap<String, Object>();
-        data.put("isSystem", new Boolean(false));
-        data.put("senderName", player.getName());
-        data.put("senderUUID", player.getUniqueId());
-        data.put("senderWorld", player.getWorld().getName());
-        data.put("server", this.plugin.getConfigHandler().getServerIdentify());
-        data.put("color", this.plugin.getConfigHandler().getServerColor());
-        data.put("message", event.getMessage());
-        this.sender.post(data);
+        this.sender.post(this.plugin.getInstance().factory.makeChatMessage(player, message));
     }
 }
