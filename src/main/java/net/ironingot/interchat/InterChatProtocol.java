@@ -10,15 +10,19 @@ import com.comphenix.protocol.wrappers.WrappedServerPing;
 public class InterChatProtocol {
 
     public InterChatProtocol(InterChatPlugin plugin) {
-        ProtocolManager manager = ProtocolLibrary.getProtocolManager();
+        Boolean useTotalPlayerCount = plugin.getConfigHandler().useTotalPlayerCount();
 
-        manager.addPacketListener(
-            new PacketAdapter(PacketAdapter.params(plugin, PacketType.Status.Server.SERVER_INFO).optionAsync()) {
-                @Override
-                public void onPacketSending(PacketEvent event) {
-                    WrappedServerPing ping = event.getPacket().getServerPings().read(0);
-                    ping.setPlayersOnline(((InterChatPlugin)plugin).getInstance().getTotalPlayerCount());
-                }
-            });
+        if (useTotalPlayerCount) {
+            ProtocolManager manager = ProtocolLibrary.getProtocolManager();
+
+            manager.addPacketListener(
+                new PacketAdapter(PacketAdapter.params(plugin, PacketType.Status.Server.SERVER_INFO).optionAsync()) {
+                    @Override
+                    public void onPacketSending(PacketEvent event) {
+                        WrappedServerPing ping = event.getPacket().getServerPings().read(0);
+                        ping.setPlayersOnline(((InterChatPlugin)plugin).getInstance().getTotalPlayerCount());
+                    }
+                });
+        }
     }
 }

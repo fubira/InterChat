@@ -45,6 +45,14 @@ public class ConfigHandler {
         return (String)config.get(path);
     }
 
+    protected Boolean getBoolean(String path) {
+        return (Boolean)config.get(path);
+    }
+
+    public Boolean useTotalPlayerCount() {
+        return getBoolean("server.useTotalPlayerCount");
+    }
+
     public String getServerIdentify() {
         return getString("server.identify");
     }

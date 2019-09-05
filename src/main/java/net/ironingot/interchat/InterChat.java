@@ -85,6 +85,7 @@ public class InterChat implements IMessageBroadcastor {
                 count = count + this.externalPlayerCountMap.get(key);
             }
         }
+
         return count;
     }
 

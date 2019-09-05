@@ -1,6 +1,7 @@
 server:
   identify: "SERVER"
   color: GOLD
+  useTotalPlayerCount: true
 
 redis: 
   uri: "[REDIS URI]"

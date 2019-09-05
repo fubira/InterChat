@@ -35,13 +35,16 @@ public class InterChatFactory {
     public Map<String, Object> makeSystemMessage(String message, int players) {
         String server = this.plugin.getConfigHandler().getServerIdentify();
         String color = this.plugin.getConfigHandler().getServerColor();
+        Boolean useTotalPlayerCount = this.plugin.getConfigHandler().useTotalPlayerCount();
 
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("isSystem", new Boolean(true));
         data.put("server", server);
         data.put("color", color);
         data.put("message", message);
-        data.put("players", new Integer(players));
+        if (useTotalPlayerCount) {
+            data.put("players", new Integer(players));
+        }
         return data;
     }
 
