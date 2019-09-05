@@ -41,27 +41,19 @@ public class ConfigHandler {
         }
     }
 
-    protected String getString(String path) {
-        return (String)config.get(path);
-    }
-
-    protected Boolean getBoolean(String path) {
-        return (Boolean)config.get(path);
-    }
-
     public Boolean useTotalPlayerCount() {
-        return getBoolean("server.useTotalPlayerCount");
+        return config.getBoolean("server.useTotalPlayerCount", false);
     }
 
     public String getServerIdentify() {
-        return getString("server.identify");
+        return config.getString("server.identify", this.plugin.getServer().getServerId());
     }
 
     public String getServerColor() {
-        return getString("server.color");
+        return config.getString("server.color", "GOLD");
     }
 
     public String getRedisURI() {
-        return getString("redis.uri");
+        return config.getString("redis.uri", "");
     }
 }
