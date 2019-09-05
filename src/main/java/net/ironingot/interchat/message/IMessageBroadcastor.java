@@ -1,4 +1,4 @@
-package net.ironingot.interchat.storage;
+package net.ironingot.interchat.message;
 
 import java.util.Map;
 

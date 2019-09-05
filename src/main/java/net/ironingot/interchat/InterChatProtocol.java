@@ -7,22 +7,31 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedServerPing;
 
-public class InterChatProtocol {
+public final class InterChatProtocol {
 
-    public InterChatProtocol(InterChatPlugin plugin) {
-        Boolean useTotalPlayerCount = plugin.getConfigHandler().useTotalPlayerCount();
-
-        if (useTotalPlayerCount) {
-            ProtocolManager manager = ProtocolLibrary.getProtocolManager();
-
-            manager.addPacketListener(
-                new PacketAdapter(PacketAdapter.params(plugin, PacketType.Status.Server.SERVER_INFO).optionAsync()) {
-                    @Override
-                    public void onPacketSending(PacketEvent event) {
-                        WrappedServerPing ping = event.getPacket().getServerPings().read(0);
-                        ping.setPlayersOnline(((InterChatPlugin)plugin).getInstance().getTotalPlayerCount());
-                    }
-                });
+    public static final void enable(InterChatPlugin plugin) {
+        if (!plugin.getConfigHandler().useTotalPlayerCount()) {
+            return;
         }
+
+        ProtocolManager manager = ProtocolLibrary.getProtocolManager();
+
+        manager.addPacketListener(
+            new PacketAdapter(PacketAdapter.params(plugin, PacketType.Status.Server.SERVER_INFO).optionAsync()) {
+                @Override
+                public void onPacketSending(PacketEvent event) {
+                    WrappedServerPing ping = event.getPacket().getServerPings().read(0);
+                    ping.setPlayersOnline(((InterChatPlugin)plugin).getMessenger().getTotalPlayers());
+                }
+            });
+    }
+
+    public static final void disable(InterChatPlugin plugin) {
+        if (!plugin.getConfigHandler().useTotalPlayerCount()) {
+            return;
+        }
+
+        ProtocolManager manager = ProtocolLibrary.getProtocolManager();
+        manager.removePacketListeners(plugin);
     }
 }

@@ -1,7 +1,6 @@
 package net.ironingot.interchat.storage;
 
-import net.ironingot.interchat.InterChatPlugin;
-import net.ironingot.interchat.InterChat;
+import net.ironingot.interchat.message.IMessageBroadcastor;
 
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.Range;
@@ -10,50 +9,42 @@ import io.lettuce.core.ScoredValue;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisSortedSetCommands;
 
-
 import java.util.List;
 import java.util.Map;
-import java.lang.Thread;
-import java.lang.InterruptedException;
 import java.time.Duration;
 
-import org.bukkit.scheduler.BukkitRunnable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class RedisMessageStore implements IMessageStoreSender, IMessageStoreReceiver {
-    private InterChatPlugin plugin;
-
+public class RedisMessageStore {
     private RedisClient redisClient;
     private StatefulRedisConnection<String, String> redisConnection;
     private String key = "logs";
     private long expireMillis = 1000 * 60 * 10;
     private long lastTime;
 
-    public RedisMessageStore(InterChatPlugin plugin) {
-        this.plugin = plugin;
-        this.redisClient = null;
-    }
+    public RedisMessageStore() {}
 
-    public void open() {
-        if (this.redisClient == null) {
-            this.redisClient = RedisClient.create(this.plugin.getConfigHandler().getRedisURI());
-            this.redisClient.setDefaultTimeout(Duration.ofSeconds(10));
-            this.redisConnection = this.redisClient.connect();
-            this.lastTime = System.currentTimeMillis();
-
-            // 古いメッセージを削除しておく
-            this.expireMessage();
+    public void open(String uri) {
+        if (this.redisClient != null) {
+            close();
         }
+
+        this.redisClient = RedisClient.create(uri);
+        this.redisClient.setDefaultTimeout(Duration.ofSeconds(10));
+        this.redisConnection = this.redisClient.connect();
+        this.lastTime = System.currentTimeMillis();
+
+        this.expireMessage();
     }
 
     public void close() {
-        final RedisClient closingRedisClient = this.redisClient ;
+        final RedisClient closingRedisClient = this.redisClient;
         final StatefulRedisConnection<String, String> closingRedisConnection = this.redisConnection;
         this.redisConnection = null;
         this.redisClient = null;
 
-        new BukkitRunnable() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
                 if (closingRedisClient != null) {
@@ -63,59 +54,52 @@ public class RedisMessageStore implements IMessageStoreSender, IMessageStoreRece
                     closingRedisClient.shutdown();
                 }
             }
-        }.runTaskLater(this.plugin, 20);
-    }
-
-    // Implement: IMessageStorePost
-    public void post(final Map<String, Object> data) {
-        if (this.redisConnection == null) {
-            InterChat.logger.warning("InterChat post failed: redisConnection is close.");
-            return;
-        }
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                postMessage(data);
-            }
-        }.runTaskAsynchronously(this.plugin);
-    }
-
-    // Implement: IMessageStoreReceive
-    public void receive(final IMessageBroadcastor broadcastor) {
-        if (this.redisConnection == null) {
-            InterChat.logger.warning("InterChat receive failed: redisConnection is close.");
-            return;
-        }
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                receiveMessage(broadcastor);
-            }
-        }.runTask(this.plugin);
+        }).start();
     }
 
     protected void expireMessage() {
         final long time = System.currentTimeMillis();
         final RedisSortedSetCommands<String, String> sync = this.redisConnection.sync();
-        sync.zremrangebyscore(key, Range.create(0, time - expireMillis));
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    sync.zremrangebyscore(key, Range.create(0, time - expireMillis));
+                }
+                catch (JSONException e) {}
+                catch (RedisCommandTimeoutException e) {}
+            }
+        }).start();
     }
 
-    protected void postMessage(final Map<String, Object> data) {
+    public void postMessage(final Map<String, Object> data) {
+        if (this.redisConnection == null) {
+            return;
+        }
+
         final String jsonString = new JSONObject(data).toString();
         final long time = System.currentTimeMillis();
-
-        try {
-            final RedisSortedSetCommands<String, String> sync = this.redisConnection.sync();
-            sync.zadd(key, time, jsonString);
-            // InterChat.logger.info("Post: " + key + ", " + time + ", " + jsonString);
-        }
-        catch (JSONException e) {}
-        catch (RedisCommandTimeoutException e) {}
+        final RedisSortedSetCommands<String, String> sync = this.redisConnection.sync();
+        
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    sync.zadd(key, time, jsonString);
+                    // net.ironingot.interchat.InterChatPlugin.logger.info("Post: " + key + ", " + time + ", " + jsonString);
+                }
+                catch (JSONException e) {}
+                catch (RedisCommandTimeoutException e) {}
+            }
+        }).start();
     }
 
-    protected void receiveMessage(final IMessageBroadcastor broadcastor) {
+    public void receiveMessage(final IMessageBroadcastor broadcastor) {
+        if (this.redisConnection == null) {
+            return;
+        }
+
         try {
             final RedisSortedSetCommands<String, String> sync = this.redisConnection.sync();
             List<ScoredValue<String>> scoredValue = sync.zrangebyscoreWithScores(key, Range.create(this.lastTime, Double.POSITIVE_INFINITY));

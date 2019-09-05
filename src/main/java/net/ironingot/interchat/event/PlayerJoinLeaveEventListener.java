@@ -1,25 +1,19 @@
 package net.ironingot.interchat.event;
 
 import net.ironingot.interchat.InterChatPlugin;
-import net.ironingot.interchat.storage.IMessageStoreSender;
+import net.ironingot.interchat.message.IMessageSender;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.Arrays;
-
 public class PlayerJoinLeaveEventListener implements Listener {
     public InterChatPlugin plugin;
-    public IMessageStoreSender sender;
+    public IMessageSender sender;
     public int playerCount;
 
-    public PlayerJoinLeaveEventListener(InterChatPlugin plugin, IMessageStoreSender sender) {
+    public PlayerJoinLeaveEventListener(InterChatPlugin plugin, IMessageSender sender) {
         this.plugin = plugin;
         this.sender = sender;
         this.playerCount = 0;
@@ -28,7 +22,7 @@ public class PlayerJoinLeaveEventListener implements Listener {
     @EventHandler()
     public void onPlayerJoin(PlayerJoinEvent event) {
         this.playerCount = plugin.getServer().getOnlinePlayers().size();
-        this.sender.post(this.plugin.getInstance().factory.makeSystemMessage(event.getJoinMessage(), this.playerCount));
+        this.sender.post(this.plugin.getMessenger().factory.system(event.getJoinMessage()));
     }
 
     @EventHandler()
@@ -38,7 +32,6 @@ public class PlayerJoinLeaveEventListener implements Listener {
             this.playerCount -= 1;
         }
 
-        Map<String, Object> data = new HashMap<String, Object>();
-        this.sender.post(this.plugin.getInstance().factory.makeSystemMessage(event.getQuitMessage(), this.playerCount));
+        this.sender.post(this.plugin.getMessenger().factory.system(event.getQuitMessage()));
     }
 }

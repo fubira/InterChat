@@ -1,7 +1,7 @@
 package net.ironingot.interchat.event;
 
 import net.ironingot.interchat.InterChatPlugin;
-import net.ironingot.interchat.storage.IMessageStoreSender;
+import net.ironingot.interchat.message.IMessageSender;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -9,14 +9,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import java.util.Map;
-import java.util.HashMap;
-
 public class PlayerChatEventListener implements Listener {
     public InterChatPlugin plugin;
-    public IMessageStoreSender sender;
+    public IMessageSender sender;
 
-    public PlayerChatEventListener(InterChatPlugin plugin, IMessageStoreSender sender) {
+    public PlayerChatEventListener(InterChatPlugin plugin, IMessageSender sender) {
         this.plugin = plugin;
         this.sender = sender;
     }
@@ -29,6 +26,6 @@ public class PlayerChatEventListener implements Listener {
         if (message.startsWith("/")) {
             return;
         }
-        this.sender.post(this.plugin.getInstance().factory.makeChatMessage(player, message));
+        this.sender.post(this.plugin.getMessenger().factory.message(player, message));
     }
 }

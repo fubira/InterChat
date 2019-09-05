@@ -1,4 +1,6 @@
-package net.ironingot.interchat;
+package net.ironingot.interchat.message;
+
+import net.ironingot.interchat.InterChatPlugin;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -7,14 +9,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class InterChatFactory {
+public class MessageFactory {
     InterChatPlugin plugin;
 
-    public InterChatFactory(InterChatPlugin plugin) {
+    public MessageFactory(InterChatPlugin plugin) {
         this.plugin = plugin;
     }
 
-    public Map<String, Object> makeChatMessage(Player player, String message) {
+    public Map<String, Object> message(Player player, String message) {
         String server = this.plugin.getConfigHandler().getServerIdentify();
         String color = this.plugin.getConfigHandler().getServerColor();
         String name = player.getName();
@@ -32,9 +34,10 @@ public class InterChatFactory {
         return data;
     }
 
-    public Map<String, Object> makeSystemMessage(String message, int players) {
+    public Map<String, Object> system(String message) {
         String server = this.plugin.getConfigHandler().getServerIdentify();
         String color = this.plugin.getConfigHandler().getServerColor();
+        int playerCount = this.plugin.getServer().getOnlinePlayers().size();
         Boolean useTotalPlayerCount = this.plugin.getConfigHandler().useTotalPlayerCount();
 
         Map<String, Object> data = new HashMap<String, Object>();
@@ -43,22 +46,18 @@ public class InterChatFactory {
         data.put("color", color);
         data.put("message", message);
         if (useTotalPlayerCount) {
-            data.put("players", new Integer(players));
+            data.put("players", new Integer(playerCount));
         }
         return data;
     }
 
-    public Map<String, Object> makeSystemMessage(String message) {
-        return makeSystemMessage(message, 0);
+    public Map<String, Object> systemServerStart() {
+        String server = this.plugin.getConfigHandler().getServerIdentify();
+        return system(ChatColor.GREEN + "Server " + server + " has started.");
     }
 
-    public Map<String, Object> makeServerStartMessage() {
+    public Map<String, Object> systemServerStop() {
         String server = this.plugin.getConfigHandler().getServerIdentify();
-        return makeSystemMessage(ChatColor.GREEN + "Server " + server + " has started.");
-    }
-
-    public Map<String, Object> makeServerStopMessage() {
-        String server = this.plugin.getConfigHandler().getServerIdentify();
-        return makeSystemMessage(ChatColor.GREEN + "Server " + server + " has stopped.");
+        return system(ChatColor.GREEN + "Server " + server + " has stopped.");
     }
 }
