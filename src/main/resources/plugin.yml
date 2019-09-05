@@ -1,7 +1,7 @@
 name: InterChat
 author: fubira
 main: net.ironingot.interchat.InterChatPlugin
-version: 0.5.0
+version: 0.6.0
 commands:
   interchat:
     aliases: [ic]
