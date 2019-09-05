@@ -41,7 +41,7 @@ public class ConfigHandler {
         }
     }
 
-    public Boolean useTotalPlayerCount() {
+    public boolean useTotalPlayerCount() {
         return config.getBoolean("server.useTotalPlayerCount", false);
     }
 
