@@ -50,7 +50,7 @@ public class RedisMessageStore implements IMessageStoreSender, IMessageStoreRece
     public void close() {
         try {
             Thread.yield();
-            Thread.sleep(200);
+            Thread.sleep(500);
         } catch (InterruptedException e) {}
 
         if (this.redisConnection != null) {

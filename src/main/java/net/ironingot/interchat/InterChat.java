@@ -59,7 +59,7 @@ public class InterChat implements IMessageBroadcastor {
             public void run() {
                 messageStoreReceiver.receive(messageBroadcastor);
             }
-        }.runTaskTimer(plugin, 50, 40);
+        }.runTaskTimer(plugin, 100, 60);
     }
 
     protected void stopReceiveTask() {
