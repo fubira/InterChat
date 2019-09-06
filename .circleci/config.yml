@@ -24,6 +24,7 @@ jobs:
           key: v1-dependencies-{{ checksum "pom.xml" }}
 
       - run: mvn package
+      - run: mkdir artifacts && cp target/*.jar artifacts
 
       - store_artifacts:
-          path: target/*.jar
+          path: artifacts

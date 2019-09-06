@@ -81,6 +81,7 @@ public class InterChatMessenger implements IMessageSender, IMessageBroadcastor {
         }
     }
 
+    // implement: IMessageSender
     public void post(final Map<String, Object> data) {
         this.messageStore.postMessage(data);
     }
@@ -114,16 +115,18 @@ public class InterChatMessenger implements IMessageSender, IMessageBroadcastor {
             } catch (IllegalArgumentException e) {}
         }
 
-        builder.append(ChatColor.DARK_GRAY).append("[")
+        builder
+            .append(ChatColor.DARK_GRAY).append("[")
             .append(serverColor).append(server)
             .append(ChatColor.DARK_GRAY).append("]")
             .append(ChatColor.RESET).append(" ");
+
         if (!isSystem) {
             builder.append("<").append(senderName).append("> ");
         }
         builder.append(message);
 
-        String str = builder.toString();
+        final String str = builder.toString();
         for(Player player: this.plugin.getServer().getOnlinePlayers()) {
             if (!ignoreList.isIgnored(player, senderName)) {
                 player.sendMessage(str);
