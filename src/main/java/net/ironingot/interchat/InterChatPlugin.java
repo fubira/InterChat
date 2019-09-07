@@ -1,6 +1,7 @@
 package net.ironingot.interchat;
 
 import net.ironingot.interchat.event.PlayerChatEventListener;
+import net.ironingot.interchat.event.PlayerDeathEventListener;
 import net.ironingot.interchat.event.PlayerJoinLeaveEventListener;
 
 import org.bukkit.plugin.PluginManager;
@@ -54,6 +55,7 @@ public class InterChatPlugin extends JavaPlugin {
     protected void registerEvents() {
         PluginManager pluginManager = this.getServer().getPluginManager(); 
         pluginManager.registerEvents(new PlayerChatEventListener(this, this.messenger), this);
+        pluginManager.registerEvents(new PlayerDeathEventListener(this, this.messenger), this);
         pluginManager.registerEvents(new PlayerJoinLeaveEventListener(this, this.messenger), this);
     }
 
