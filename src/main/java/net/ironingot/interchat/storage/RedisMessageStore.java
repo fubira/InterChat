@@ -5,6 +5,7 @@ import net.ironingot.interchat.message.IMessageBroadcastor;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.Range;
 import io.lettuce.core.RedisCommandTimeoutException;
+import io.lettuce.core.RedisConnectionException;
 import io.lettuce.core.ScoredValue;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisSortedSetCommands;
@@ -32,9 +33,15 @@ public class RedisMessageStore {
 
         this.redisClient = RedisClient.create(uri);
         this.redisClient.setDefaultTimeout(Duration.ofSeconds(10));
-        this.redisConnection = this.redisClient.connect();
-        this.lastTime = System.currentTimeMillis();
+        try {
+            this.redisConnection = this.redisClient.connect();
+        } catch(RedisConnectionException e) {
+            this.redisClient = null;
+            this.redisConnection = null;
+            throw e;
+        }
 
+        this.lastTime = System.currentTimeMillis();
         this.expireMessage();
     }
 
@@ -58,6 +65,10 @@ public class RedisMessageStore {
     }
 
     protected void expireMessage() {
+        if (this.redisConnection == null || !this.redisConnection.isOpen()) {
+            return;
+        }
+
         final long time = System.currentTimeMillis();
         final RedisSortedSetCommands<String, String> sync = this.redisConnection.sync();
 
@@ -74,7 +85,7 @@ public class RedisMessageStore {
     }
 
     public void postMessage(final Map<String, Object> data) {
-        if (this.redisConnection == null) {
+        if (this.redisConnection == null || !this.redisConnection.isOpen()) {
             return;
         }
 
@@ -96,7 +107,7 @@ public class RedisMessageStore {
     }
 
     public void receiveMessage(final IMessageBroadcastor broadcastor) {
-        if (this.redisConnection == null) {
+        if (this.redisConnection == null || !this.redisConnection.isOpen()) {
             return;
         }
 
