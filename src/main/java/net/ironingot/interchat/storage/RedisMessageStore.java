@@ -47,7 +47,7 @@ public class RedisMessageStore {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if (closingRedisClient != null) {
+                if (closingRedisConnection != null) {
                     closingRedisConnection.close();
                 }
                 if (closingRedisClient != null) {
