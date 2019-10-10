@@ -5,7 +5,7 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-const REDIS_URL = process.env.REDIS_URL || 'redis://h:p7e3f731fa2fa7e59738c11534102195c276456cf3672539ff781042d66a8f91b@ec2-3-92-111-148.compute-1.amazonaws.com:22409'
+const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
 const Redis = require('ioredis');
 const redis = new Redis(REDIS_URL);
 
