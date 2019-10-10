@@ -1,0 +1,16 @@
+{
+  "name": "InterChat server",
+  "version": "0.2.0",
+  "description": "InterChat cache server implements",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.13.3",
+    "connect-redis": "^4.0.3",
+    "express": "^4.13.3",
+    "redis": "^2.6.2"
+  },
+  "license": "MIT"
+}

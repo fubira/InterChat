@@ -1,0 +1,15 @@
+*~
+*.sw[mnpcod]
+.tmp
+*.tmp
+*.tmp.*
+.DS_Store
+Thumbs.db
+
+*.log
+log.txt
+npm-debug.log*
+
+/.vscode
+/dist
+/node_modules
