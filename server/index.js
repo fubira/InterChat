@@ -20,6 +20,7 @@ const server = app.listen(app.get('port'), function () {
 const KEY = "messages";
 
 app.get('/', (req, res) => {
+  const time = Date.now();
   res.json({ result: 'ok', time });
 });
 
