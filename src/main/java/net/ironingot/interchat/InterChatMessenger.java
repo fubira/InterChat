@@ -75,8 +75,8 @@ public class InterChatMessenger implements IMessageSender, IMessageBroadcastor {
         chatReceiveTask = new BukkitRunnable() {
             @Override
             public void run() {
-                // messageStore.receiveMessage(broadcastor);
-                backend.receiveMessage(broadcastor);
+                backend.broadcastMessage(broadcastor);
+                backend.receiveMessageAsync();
             }
         }.runTaskTimer(this.plugin, 100, 60);
     }
@@ -91,7 +91,7 @@ public class InterChatMessenger implements IMessageSender, IMessageBroadcastor {
     // implement: IMessageSender
     public void post(final Map<String, Object> data) {
         // this.messageStore.postMessage(data);
-        backend.postMessage(data);
+        backend.postMessageAsync(data);
     }
 
     // implement: IMessageBroadcastor
@@ -109,6 +109,11 @@ public class InterChatMessenger implements IMessageSender, IMessageBroadcastor {
         Integer playersCount = (Integer) data.get("players");
 
         if (this.plugin.getConfigHandler().getServerIdentify().equals(server)) {
+            return;
+        }
+
+        if (server == null && senderName == null && message == null) {
+            InterChatPlugin.logger.warning("broadcast failed: empty message received.");
             return;
         }
 

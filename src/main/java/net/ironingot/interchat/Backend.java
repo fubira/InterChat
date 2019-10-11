@@ -2,8 +2,6 @@ package net.ironingot.interchat;
 
 import net.ironingot.interchat.message.IMessageBroadcastor;
 
-import java.io.BufferedOutputStream;
-import java.io.OutputStreamWriter;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
@@ -11,17 +9,23 @@ import java.net.URL;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.JSONException;
 
 public class Backend {
-    private static final String codec = "UTF-8";
+    private static final String charset = "UTF-8";
 
     private String backendUrl = "";
     private String backendAuthKey = "";
     private long lastTime;
+
+    private List<JSONObject> messageCache = new ArrayList<JSONObject>();
+
+    private Thread receiveThread = null;
 
     public Backend(String url, String authKey) {
         this.backendUrl = url;
@@ -40,7 +44,6 @@ public class Backend {
     private static String callRest(String urlString, String request, String data) {
         HttpURLConnection connection = null;
         BufferedReader bufferedReader = null;
-        OutputStreamWriter outputStreamWriter = null;
         StringBuilder stringBuilder = new StringBuilder();
 
         try {
@@ -48,18 +51,15 @@ public class Backend {
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod(request);
             if (request == "POST") {
-                connection.setRequestProperty("Content-Type", "application/json");
+                connection.setRequestProperty("Content-Type", "application/json; charset=" + charset);
                 connection.setRequestProperty("Accept", "application/json");
                 connection.setUseCaches(false);
                 connection.setDoOutput(true);
-                outputStreamWriter = new OutputStreamWriter(new BufferedOutputStream(connection.getOutputStream()));
-                outputStreamWriter.write(data);
-                outputStreamWriter.close();
-                outputStreamWriter = null;
+                connection.getOutputStream().write(data.getBytes(charset));
             }
             connection.connect();
 
-            bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), codec));
+            bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), charset));
 
             String line;
             while ((line = bufferedReader.readLine()) != null) {
@@ -70,12 +70,6 @@ public class Backend {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            try {
-                if (outputStreamWriter != null) {
-                    outputStreamWriter.close();
-                }
-            } catch (IOException e) {
-            }
             try {
                 if (bufferedReader != null) {
                     bufferedReader.close();
@@ -101,33 +95,58 @@ public class Backend {
         return responseObject;
     }
 
-    public void postMessage(final Map<String, Object> data) {
-        JSONObject json = new JSONObject(data);
-        InterChatPlugin.logger.info("Post data: " + json.toString());
-        String response = Backend.postRest(this.backendUrl + "/post", json.toString());
-        InterChatPlugin.logger.info("Post Response: " + response);
+    public void postMessageAsync(final Map<String, Object> data) {
+        final Backend self = this;
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject json = new JSONObject(data);
+                Backend.postRest(self.backendUrl + "/post", json.toString());
+            }
+        }).start();
     }
 
-    public void receiveMessage(final IMessageBroadcastor broadcastor) {
-        String response = Backend.getRest(this.backendUrl + "/message?from=" + lastTime);
-        InterChatPlugin.logger.info("Message Response: " + response);
-
-        JSONObject responseJson = parseResponse(response);
-        if ((String)responseJson.get("result") != "ok") {
-            InterChatPlugin.logger.warning("Backend.receiveMessage: bad response: " + response);
+    public void receiveMessageAsync() {
+        final Backend self = this;
+        if(this.receiveThread != null && this.receiveThread.isAlive()) {
             return;
         }
 
-        Long newTime = responseJson.getLong("time");
-        this.lastTime = this.lastTime > newTime ? this.lastTime : newTime;
+        this.receiveThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String response = Backend.getRest(self.backendUrl + "/message?from=" + lastTime);
+
+                JSONObject responseJson = parseResponse(response);
+                if (!"ok".equalsIgnoreCase(responseJson.getString("result"))) {
+                    InterChatPlugin.logger.warning("Backend.receiveMessage: bad response: " + response);
+                    return;
+                }
         
-        try {
-            JSONArray messages = responseJson.getJSONArray("messages");
-            for (Object value: messages) {
-                broadcastor.broadcast(new JSONObject(value).toMap());
+                Long newTime = responseJson.getLong("time") + 1;
+                self.lastTime = self.lastTime > newTime ? self.lastTime : newTime;
+                
+                try {
+                    JSONArray messages = responseJson.getJSONArray("messages");
+                    for (int i = 0; i < messages.length(); i ++) {
+                        JSONObject json = messages.getJSONObject(i);
+                        messageCache.add(json);
+                    }
+                }
+                catch (JSONException e) {}
             }
+        });
+        this.receiveThread.start();
+    }
+
+    public void broadcastMessage(final IMessageBroadcastor broadcastor) {
+        int count = 0;
+
+        while(!this.messageCache.isEmpty()) {
+            JSONObject json = this.messageCache.remove(0);
+            broadcastor.broadcast(json.toMap());
+            if (++count > 10) break;
         }
-        catch (JSONException e) {}
-        
     }
 }
