@@ -31,7 +31,7 @@ app.post('/post', (req, res) => {
   const time = Date.now();
   const body = req.body;
 
-  redis.zadd(KEY, time, JSON.stringify(body)).then((result) => {
+  redis.zadd(KEY, time, body).then((result) => {
     console.log(result);
     res.json({ result: 'ok', time });
   });

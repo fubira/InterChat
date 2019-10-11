@@ -19,6 +19,7 @@ import java.util.Map;
 public class InterChatMessenger implements IMessageSender, IMessageBroadcastor {
     public InterChatPlugin plugin;
 
+    public Backend backend;
     public BukkitTask chatReceiveTask = null;
     public RedisMessageStore messageStore;
     public MessageFactory factory;
@@ -28,13 +29,18 @@ public class InterChatMessenger implements IMessageSender, IMessageBroadcastor {
     public InterChatMessenger(InterChatPlugin plugin) {
         this.plugin = plugin;
         
+        this.backend = new Backend(
+            this.plugin.getConfigHandler().getBackendUrl(),
+            this.plugin.getConfigHandler().getBackendAuthKey()
+        );
+
         this.messageStore = new RedisMessageStore();
         this.factory = new MessageFactory(this.plugin);
         this.ignoreList = new IgnoreList(this.plugin);
     }
 
     public void enable() {
-        this.messageStore.open(this.plugin.getConfigHandler().getRedisURI());
+        // this.messageStore.open(this.plugin.getConfigHandler().getRedisURI());
         this.startReceiveTask();
         this.post(this.factory.systemServerStart());
     }
@@ -43,7 +49,7 @@ public class InterChatMessenger implements IMessageSender, IMessageBroadcastor {
         this.post(this.factory.systemServerStop());
         this.stopReceiveTask();
         this.plugin.getServer().getScheduler().cancelTasks(this.plugin);
-        this.messageStore.close();
+        // this.messageStore.close();
     }
 
     protected int getTotalExternalPlayers() {
@@ -69,7 +75,8 @@ public class InterChatMessenger implements IMessageSender, IMessageBroadcastor {
         chatReceiveTask = new BukkitRunnable() {
             @Override
             public void run() {
-                messageStore.receiveMessage(broadcastor);
+                // messageStore.receiveMessage(broadcastor);
+                backend.receiveMessage(broadcastor);
             }
         }.runTaskTimer(this.plugin, 100, 60);
     }
@@ -83,7 +90,8 @@ public class InterChatMessenger implements IMessageSender, IMessageBroadcastor {
 
     // implement: IMessageSender
     public void post(final Map<String, Object> data) {
-        this.messageStore.postMessage(data);
+        // this.messageStore.postMessage(data);
+        backend.postMessage(data);
     }
 
     // implement: IMessageBroadcastor

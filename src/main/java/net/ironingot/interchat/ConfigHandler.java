@@ -56,4 +56,12 @@ public class ConfigHandler {
     public String getRedisURI() {
         return config.getString("redis.uri", "");
     }
+
+    public String getBackendUrl() {
+        return config.getString("backend.url", "");
+    }
+
+    public String getBackendAuthKey() {
+        return config.getString("backend.authKey", "");
+    }
 }

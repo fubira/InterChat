@@ -3,5 +3,6 @@ server:
   color: GOLD
   useTotalPlayerCount: true
 
-redis: 
-  uri: "[REDIS URI]"
+backend:
+  url: "https://kenmomine-interchat.herokuapp.com"
+  authKey: ""
