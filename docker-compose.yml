@@ -2,7 +2,7 @@ redis:
   image: redis
   volumes:
     - /data/redis:/data
-  restar: unless-stopped
+  restart: unless-stopped
 
 backend:
   build: server
@@ -16,6 +16,6 @@ backend:
     - PORT=5125
   links:
     - redis
-  restar: unless-stopped
+  restart: unless-stopped
   command:
     sh -c 'npm i && npm start'
