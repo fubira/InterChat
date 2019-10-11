@@ -55,10 +55,8 @@ public class Backend {
                 outputStreamWriter.write(data);
                 outputStreamWriter.close();
                 outputStreamWriter = null;
-                connection.connect();
-            } else {
-                connection.connect();
             }
+            connection.connect();
 
             bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), codec));
 
