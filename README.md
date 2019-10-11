@@ -27,10 +27,11 @@ docker-compose up
 ``` sh
 git checkout https://github.com/fubira/InterChat.git
 cd InterChat/server
-docker build -t <yourname>/interchat .
+docker build -t <yourname>/interchat-backend .
 docker run -d -it \
-  -e REDIS_URL="Your redis server" -e PORT="Backend server port" \
-  -p xxxx:xxxx --name interchat <yourname>/interchat
+  -v .:/var/www/app \
+  -e REDIS_URL="redis://localhost:6379" -e PORT="5125" \
+  -p 5125:5125 --name interchat <yourname>/interchat-backend
 ```
 
 ## Config
