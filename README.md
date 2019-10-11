@@ -24,16 +24,6 @@ cd InterChat
 docker-compose up
 ```
 
-``` sh
-git checkout https://github.com/fubira/InterChat.git
-cd InterChat/server
-docker build -t <yourname>/interchat-backend .
-docker run -d -it \
-  -v .:/var/www/app \
-  -e REDIS_URL="redis://localhost:6379" -e PORT="5125" \
-  -p 5125:5125 --name interchat <yourname>/interchat-backend
-```
-
 ## Config
 
 InterChat/config.yml

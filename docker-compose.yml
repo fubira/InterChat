@@ -3,15 +3,15 @@ redis:
   volumes:
     - /data/redis:/data
 
-app:
+backend:
   build: server
   volumes:
-    - server:/var/www/app
+    - server:/var/www/backend
   ports:
     - 5125:5125
   environment:
     - NODE_ENV=devemlopment
-    - REDIS_URL=redis://localhost:6379/
+    - REDIS_URL=redis://redis:6379/
     - PORT=5125
   links:
     - redis
