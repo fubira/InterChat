@@ -29,7 +29,9 @@ app.get('/', (req, res) => {
 app.post('/post', (req, res) => {
   const time = Date.now();
   const body = req.body;
-  console.log("body:", req);
+  console.log("body:", req.body);
+  console.log("params:", req.params);
+  console.log("query:", req.query);
 
   redis.zadd(KEY, time, JSON.stringify(body)).then((result) => {
     console.log(result);
