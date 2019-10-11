@@ -1,0 +1,19 @@
+redis:
+  image: redis
+  volumes:
+    - /data/redis:/data
+
+app:
+  build: server
+  volumes:
+    - server:/var/www/app
+  ports:
+    - 5105:5105
+  environment:
+    - NODE_ENV=devemlopment
+    - REDIS_URL=redis://localhost:6379/
+    - PORT=5105
+  links:
+    - redis
+  command:
+    sh -c 'npm i && npm start'

@@ -43,11 +43,6 @@
         <version>20180813</version>
     </dependency>
     <dependency>
-        <groupId>io.lettuce</groupId>
-        <artifactId>lettuce-core</artifactId>
-        <version>5.1.8.RELEASE</version>
-    </dependency>
-    <dependency>
         <groupId>com.gmail.fyrvelm</groupId>
         <artifactId>ChatCo</artifactId>
         <version>0.24</version>
@@ -83,35 +78,10 @@
           <minimizeJar>true</minimizeJar>
           <artifactSet>
             <includes>
-              <include>io.lettuce:*</include>
-              <include>io.projectreactor:*</include>
-              <include>io.netty:*</include>
-              <include>org.reactivestreams:*</include>
               <include>org.json:*</include>
-              <include>org.slf4j:*</include>
             </includes>
           </artifactSet>
           <relocations>
-            <relocation>
-              <pattern>io.lettuce</pattern>
-              <shadedPattern>net.ironingot.interchat.depend.lettuce</shadedPattern>
-            </relocation>
-            <relocation>
-              <pattern>io.projectreactor</pattern>
-              <shadedPattern>net.ironingot.interchat.depend.projectreactor</shadedPattern>
-            </relocation>
-            <relocation>
-              <pattern>io.netty</pattern>
-              <shadedPattern>net.ironingot.interchat.depend.netty</shadedPattern>
-            </relocation>
-            <relocation>
-              <pattern>org.reactivestreams</pattern>
-              <shadedPattern>net.ironingot.interchat.depend.reactivestreams</shadedPattern>
-            </relocation>
-            <relocation>
-              <pattern>org.slf4j</pattern>
-              <shadedPattern>net.ironingot.interchat.depend.slf4j</shadedPattern>
-            </relocation>
             <relocation>
               <pattern>org.json</pattern>
               <shadedPattern>net.ironingot.interchat.depend.json</shadedPattern>

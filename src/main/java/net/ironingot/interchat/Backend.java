@@ -96,6 +96,10 @@ public class Backend {
     }
 
     public void postMessageAsync(final Map<String, Object> data) {
+        if (this.backendUrl == null) {
+            return;
+        }
+
         final Backend self = this;
 
         new Thread(new Runnable() {
@@ -108,10 +112,14 @@ public class Backend {
     }
 
     public void receiveMessageAsync() {
-        final Backend self = this;
+        if (this.backendUrl == null) {
+            return;
+        }
         if(this.receiveThread != null && this.receiveThread.isAlive()) {
             return;
         }
+
+        final Backend self = this;
 
         this.receiveThread = new Thread(new Runnable() {
             @Override

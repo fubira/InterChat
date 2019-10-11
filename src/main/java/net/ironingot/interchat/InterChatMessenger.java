@@ -5,7 +5,6 @@ import net.ironingot.interchat.message.IMessageBroadcastor;
 import net.ironingot.interchat.message.IMessageSender;
 import net.ironingot.interchat.message.MessageFactory;
 import net.ironingot.interchat.message.IgnoreList;
-import net.ironingot.interchat.storage.RedisMessageStore;
 
 import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitTask;
@@ -21,7 +20,6 @@ public class InterChatMessenger implements IMessageSender, IMessageBroadcastor {
 
     public Backend backend;
     public BukkitTask chatReceiveTask = null;
-    public RedisMessageStore messageStore;
     public MessageFactory factory;
     public IgnoreList ignoreList;
     public Map<String, Integer> externalPlayerCountMap = new HashMap<String, Integer>();
@@ -34,7 +32,6 @@ public class InterChatMessenger implements IMessageSender, IMessageBroadcastor {
             this.plugin.getConfigHandler().getBackendAuthKey()
         );
 
-        this.messageStore = new RedisMessageStore();
         this.factory = new MessageFactory(this.plugin);
         this.ignoreList = new IgnoreList(this.plugin);
     }

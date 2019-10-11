@@ -14,6 +14,25 @@ Please install redis in your server, or examine the use of the cloud service.
 - Sharing login and logout messages between multiple servers
 - You can hide any messages by /ignore with [ChatCo](https://www.spigotmc.org/resources/chatco.38986/).
 
+## Install backend server
+
+Using docker compose (with redis image)
+
+``` sh
+git checkout https://github.com/fubira/InterChat.git
+cd InterChat
+docker-compose up
+```
+
+``` sh
+git checkout https://github.com/fubira/InterChat.git
+cd InterChat/server
+docker build -t <yourname>/interchat .
+docker run -d -it \
+  -e REDIS_URL="Your redis server" -e PORT="Backend server port" \
+  -p xxxx:xxxx --name interchat <yourname>/interchat
+```
+
 ## Config
 
 InterChat/config.yml
@@ -23,8 +42,9 @@ server:
   identify: "SERVER"
   color: GOLD
 
-redis: 
-  uri: "[REDIS URI]"
+backend:
+  url: "[REDIS URI]"
+  authKey: "[AUTH KEY]"
 ```
 
 - server.identify
@@ -33,6 +53,5 @@ redis:
 - server.color
   - Display color of server name, [ChatColor](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/ChatColor.html)
 
-- redis.uri
-  - Redis URI including id/password
-  - "redis://[user:password@]host[:port]"
+- backend.url
+  - Backend Server URL
