@@ -9,11 +9,11 @@ backend:
   volumes:
     - server:/var/www/backend
   ports:
-    - 5125:5125
+    - 25125:25125
   environment:
     - NODE_ENV=devemlopment
     - REDIS_URL=redis://redis:6379/
-    - PORT=5125
+    - PORT=25125
   links:
     - redis
   restart: unless-stopped
