@@ -8,11 +8,11 @@ app:
   volumes:
     - server:/var/www/app
   ports:
-    - 5105:5105
+    - 5125:5125
   environment:
     - NODE_ENV=devemlopment
     - REDIS_URL=redis://localhost:6379/
-    - PORT=5105
+    - PORT=5125
   links:
     - redis
   command:
