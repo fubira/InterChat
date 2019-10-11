@@ -47,8 +47,9 @@ public class Backend {
             URL url = new URL(urlString);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod(request);
-            // connection.setRequestProperty("Content-Type", "application/json; charset=uft-8");
             if (request == "POST") {
+                connection.setRequestProperty("Content-Type", "application/json");
+                connection.setRequestProperty("Accept", "application/json");
                 connection.setUseCaches(false);
                 connection.setDoOutput(true);
                 outputStreamWriter = new OutputStreamWriter(new BufferedOutputStream(connection.getOutputStream()));
