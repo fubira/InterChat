@@ -18,6 +18,8 @@ const server = app.listen(app.get('port'), function () {
 });
 
 const KEY = "messages";
+const EXPIRESEC = 60 * 30;
+redis.expire(KEY, EXPIRESEC);
 
 app.get('/', (req, res) => {
   const time = Date.now();
@@ -54,8 +56,7 @@ app.get('/message', (req, res) => {
 // Expire old messages
 app.get('/expire', (req, res) => {
   const time = Date.now();
-  const expireMillis = 1000 * 60 * 10;
-  redis.zremrangebyscore(KEY, 0, time - expireMillis).then((err, result) => {
+  redis.zremrangebyscore(KEY, 0, time - (EXPIRESEC * 1000)).then((err, result) => {
     res.json({ result: 'ok', time });
   });
 });
