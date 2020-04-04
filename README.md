@@ -19,9 +19,9 @@ Please install redis in your server, or examine the use of the cloud service.
 Using docker compose (with redis image)
 
 ``` sh
-git checkout https://github.com/fubira/InterChat.git
+git clone https://github.com/fubira/InterChat.git
 cd InterChat
-docker-compose up
+docker-compose up -d
 ```
 
 ``` sh
