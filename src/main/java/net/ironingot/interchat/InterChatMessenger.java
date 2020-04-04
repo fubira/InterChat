@@ -37,7 +37,6 @@ public class InterChatMessenger implements IMessageSender, IMessageBroadcastor {
     }
 
     public void enable() {
-        // this.messageStore.open(this.plugin.getConfigHandler().getRedisURI());
         this.startReceiveTask();
         this.post(this.factory.systemServerStart());
     }
@@ -46,7 +45,6 @@ public class InterChatMessenger implements IMessageSender, IMessageBroadcastor {
         this.post(this.factory.systemServerStop());
         this.stopReceiveTask();
         this.plugin.getServer().getScheduler().cancelTasks(this.plugin);
-        // this.messageStore.close();
     }
 
     protected int getTotalExternalPlayers() {
@@ -75,7 +73,7 @@ public class InterChatMessenger implements IMessageSender, IMessageBroadcastor {
                 backend.broadcastMessage(broadcastor);
                 backend.receiveMessageAsync();
             }
-        }.runTaskTimer(this.plugin, 100, 60);
+        }.runTaskTimer(this.plugin, 100, 30);
     }
 
     protected void stopReceiveTask() {

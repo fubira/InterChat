@@ -24,6 +24,16 @@ cd InterChat
 docker-compose up
 ```
 
+``` sh
+ufw allow 25125/tcp
+```
+
+``` yaml
+backend:
+  url: "http://yourserver.com:25125"
+```
+
+
 ## Config
 
 InterChat/config.yml

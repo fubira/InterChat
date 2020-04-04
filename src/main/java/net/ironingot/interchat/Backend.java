@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +69,8 @@ public class Backend {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (UnknownHostException e) {
             e.printStackTrace();
         } finally {
             try {
