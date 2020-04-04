@@ -68,9 +68,9 @@ public class Backend {
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         } finally {
             try {

@@ -1,7 +1,5 @@
 package net.ironingot.interchat;
 
-import net.ironingot.interchat.InterChatPlugin;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -46,7 +44,7 @@ public class ConfigHandler {
     }
 
     public String getServerIdentify() {
-        return config.getString("server.identify", this.plugin.getServer().getServerId());
+        return config.getString("server.identify", this.plugin.getServer().getName());
     }
 
     public String getServerColor() {
