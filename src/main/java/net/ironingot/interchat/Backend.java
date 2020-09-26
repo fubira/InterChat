@@ -108,8 +108,12 @@ public class Backend {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                JSONObject json = new JSONObject(data);
-                Backend.postRest(self.backendUrl + "/post", json.toString());
+                try {
+                    JSONObject json = new JSONObject(data);
+                    Backend.postRest(self.backendUrl + "/post", json.toString());
+                }  catch (JSONException e) {
+                    // e.printStackTrace();
+                }
             }
         }).start();
     }
@@ -127,17 +131,23 @@ public class Backend {
         this.receiveThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                String response = Backend.getRest(self.backendUrl + "/message?from=" + lastTime);
+                String response = null;
+                try {
+                    response = Backend.getRest(self.backendUrl + "/message?from=" + lastTime);
+                } catch (Exception e) {}
 
-                JSONObject responseJson = parseResponse(response);
-                if (!"ok".equalsIgnoreCase(responseJson.getString("result"))) {
-                    InterChatPlugin.logger.warning("Backend.receiveMessage: bad response: " + response);
-                    return;
-                }
+                JSONObject responseJson = null;
+                try {
+                    responseJson = parseResponse(response);
+                    if (!"ok".equalsIgnoreCase(responseJson.getString("result"))) {
+                        InterChatPlugin.logger.warning("Backend.receiveMessage: bad response: " + response);
+                        return;
+                    }
+
+                    Long newTime = responseJson.getLong("time") + 1;
+                    self.lastTime = self.lastTime > newTime ? self.lastTime : newTime;
+                } catch (Exception e) {}
         
-                Long newTime = responseJson.getLong("time") + 1;
-                self.lastTime = self.lastTime > newTime ? self.lastTime : newTime;
-                
                 try {
                     JSONArray messages = responseJson.getJSONArray("messages");
                     for (int i = 0; i < messages.length(); i ++) {
