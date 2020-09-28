@@ -11,10 +11,6 @@
 
   <repositories>
     <repository>
-      <id>mavenrepository</id>
-      <url>https://mvnrepository.com/</url>
-    </repository>
-    <repository>
       <id>spigot-repo</id>
       <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
     </repository>
@@ -28,7 +24,7 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.14.4-R0.1-SNAPSHOT</version>
+      <version>1.15.2-R0.1-SNAPSHOT</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
@@ -47,7 +43,7 @@
         <artifactId>ChatCo</artifactId>
         <version>0.24</version>
         <scope>system</scope>
-        <systemPath>${basedir}/lib/ChatCo.jar</systemPath>
+        <systemPath>${pom.basedir}/lib/ChatCo.jar</systemPath>
     </dependency>
   </dependencies>
 

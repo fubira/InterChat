@@ -24,7 +24,7 @@ public class MessageFactory {
         String world = player.getWorld().getName();
 
         Map<String, Object> data = new HashMap<String, Object>();
-        data.put("isSystem", new Boolean(false));
+        data.put("isSystem", false);
         data.put("senderName", name);
         data.put("senderUUID", uuid);
         data.put("senderWorld", world);
@@ -41,12 +41,12 @@ public class MessageFactory {
         Boolean useTotalPlayerCount = this.plugin.getConfigHandler().useTotalPlayerCount();
 
         Map<String, Object> data = new HashMap<String, Object>();
-        data.put("isSystem", new Boolean(true));
+        data.put("isSystem", true);
         data.put("server", server);
         data.put("color", color);
         data.put("message", message);
         if (useTotalPlayerCount) {
-            data.put("players", new Integer(playerCount));
+            data.put("players", playerCount);
         }
         return data;
     }
