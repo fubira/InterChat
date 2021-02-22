@@ -66,6 +66,6 @@ app.get('/message', (req, res) => {
 // Expire old messages
 app.get('/expire', (req, res) => {
   expire(req, res).then((err, result) => {
-    res.json({ result: 'ok', time });
+    res.json({ result: 'ok' });
   });
 });
