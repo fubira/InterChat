@@ -1,6 +1,5 @@
 package net.ironingot.interchat;
 
-import net.ironingot.interchat.InterChatPlugin;
 import net.ironingot.interchat.message.IMessageBroadcastor;
 import net.ironingot.interchat.message.IMessageSender;
 import net.ironingot.interchat.message.MessageFactory;

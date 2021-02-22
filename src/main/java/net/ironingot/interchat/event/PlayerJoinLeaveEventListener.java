@@ -3,6 +3,7 @@ package net.ironingot.interchat.event;
 import net.ironingot.interchat.InterChatPlugin;
 import net.ironingot.interchat.message.IMessageSender;
 
+import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -21,17 +22,26 @@ public class PlayerJoinLeaveEventListener implements Listener {
 
     @EventHandler()
     public void onPlayerJoin(PlayerJoinEvent event) {
+        InterChatPlugin.logger.info(event.getEventName() + ',' + event.getPlayer().getName() + ',' + event.getJoinMessage());
         this.playerCount = plugin.getServer().getOnlinePlayers().size();
-        this.sender.post(this.plugin.getMessenger().factory.system(event.getJoinMessage()));
+
+        final StringBuilder builder = new StringBuilder();
+        builder.append(ChatColor.YELLOW).append(event.getPlayer().getName()).append(" joined the game");
+        String message = !event.getJoinMessage().isEmpty() ? event.getJoinMessage() :  builder.toString();
+        this.sender.post(this.plugin.getMessenger().factory.system(message));
     }
 
     @EventHandler()
     public void onPlayerLeave(PlayerQuitEvent event) {
+        InterChatPlugin.logger.info(event.getEventName() + ',' + event.getPlayer().getName() + ',' + event.getQuitMessage());
         this.playerCount = plugin.getServer().getOnlinePlayers().size();
         if (plugin.getServer().getOnlinePlayers().contains((event.getPlayer()))) {
             this.playerCount -= 1;
         }
 
-        this.sender.post(this.plugin.getMessenger().factory.system(event.getQuitMessage()));
+        final StringBuilder builder = new StringBuilder();
+        builder.append(ChatColor.YELLOW).append(event.getPlayer().getName()).append(" left the game");
+        String message = !event.getQuitMessage().isEmpty() ? event.getQuitMessage() : builder.toString();
+        this.sender.post(this.plugin.getMessenger().factory.system(message));
     }
 }

@@ -21,6 +21,11 @@ const KEY = "messages";
 const EXPIRESEC = 60 * 30;
 redis.expire(KEY, EXPIRESEC);
 
+function expire(req, res) {
+  const time = Date.now();
+  return redis.zremrangebyscore(KEY, 0, time - (EXPIRESEC * 1000));
+}
+
 app.get('/', (req, res) => {
   const time = Date.now();
   res.json({ result: 'ok', time });
@@ -38,6 +43,8 @@ app.post('/post', (req, res) => {
     // console.log(result);
     res.json({ result: 'ok', time });
   });
+
+  expire(req, res);
 });
 
 // Get messages
@@ -58,8 +65,7 @@ app.get('/message', (req, res) => {
 
 // Expire old messages
 app.get('/expire', (req, res) => {
-  const time = Date.now();
-  redis.zremrangebyscore(KEY, 0, time - (EXPIRESEC * 1000)).then((err, result) => {
+  expire(req, res).then((err, result) => {
     res.json({ result: 'ok', time });
   });
 });
