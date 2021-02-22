@@ -22,7 +22,6 @@ public class PlayerJoinLeaveEventListener implements Listener {
 
     @EventHandler()
     public void onPlayerJoin(PlayerJoinEvent event) {
-        InterChatPlugin.logger.info(event.getEventName() + ',' + event.getPlayer().getName() + ',' + event.getJoinMessage());
         this.playerCount = plugin.getServer().getOnlinePlayers().size();
 
         final StringBuilder builder = new StringBuilder();
@@ -33,7 +32,6 @@ public class PlayerJoinLeaveEventListener implements Listener {
 
     @EventHandler()
     public void onPlayerLeave(PlayerQuitEvent event) {
-        InterChatPlugin.logger.info(event.getEventName() + ',' + event.getPlayer().getName() + ',' + event.getQuitMessage());
         this.playerCount = plugin.getServer().getOnlinePlayers().size();
         if (plugin.getServer().getOnlinePlayers().contains((event.getPlayer()))) {
             this.playerCount -= 1;
