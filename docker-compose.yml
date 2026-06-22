@@ -1,21 +1,18 @@
-redis:
-  image: redis
-  volumes:
-    - /data/redis:/data
-  restart: unless-stopped
+services:
+  redis:
+    image: redis
+    volumes:
+      - /data/redis:/data
+    restart: unless-stopped
 
-backend:
-  build: server
-  volumes:
-    - server:/var/www/backend
-  ports:
-    - 25125:25125
-  environment:
-    - NODE_ENV=devemlopment
-    - REDIS_URL=redis://redis:6379/
-    - PORT=25125
-  links:
-    - redis
-  restart: unless-stopped
-  command:
-    sh -c 'npm i && npm start'
+  backend:
+    build: server
+    ports:
+      - 25125:25125
+    environment:
+      - NODE_ENV=development
+      - REDIS_URL=redis://redis:6379/
+      - PORT=25125
+    depends_on:
+      - redis
+    restart: unless-stopped
